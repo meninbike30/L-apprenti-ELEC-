@@ -285,6 +285,66 @@ const COURS_ATELIER_LINKS = {
 };
 
 let COURS_INDEX = [];
+let currentCoursDetailIndex = -1;
+
+// Mots-clés -> icône COMP_ICONS pour illustrer les sujets sans montage atelier associé
+const COURS_ICON_KEYWORDS = [
+  ["interrupteur différentiel", "differentiel"],
+  ["différentiel", "differentiel"],
+  ["disjoncteur", "disjoncteur"],
+  ["agcp", "disjoncteur"],
+  ["fusible", "fusible"],
+  ["parafoudre", "parafoudre"],
+  ["indices de protection", "protection-ip"],
+  ["classes d'isolation", "protection-ip"],
+  ["salle de bain", "salle-bain"],
+  ["terre", "bornier-terre"],
+  ["va et vient", "va-et-vient"],
+  ["permutateur", "permutateur"],
+  ["interrupteur horaire", "interrupteur-horaire"],
+  ["allumage", "interrupteur"],
+  ["interrupteur", "interrupteur"],
+  ["télérupteur", "telerupteur"],
+  ["contacteur", "contacteur"],
+  ["minuterie", "minuterie"],
+  ["yokis", "module-yokis"],
+  ["détecteur de mouvement", "detecteur"],
+  ["sonnette", "sonnette"],
+  ["prise de courant", "prise"],
+  ["prise commandée", "prise"],
+  ["chauffe-eau", "chauffe-eau"],
+  ["ecs", "chauffe-eau"],
+  ["chauffage", "radiateur"],
+  ["plaque de cuisson", "plaque-cuisson"],
+  ["volet roulant", "volet-roulant"],
+  ["transformateur", "transformateur"],
+  ["compteur", "compteur"],
+  ["câbles électriques", "cable"],
+  ["conducteurs électriques", "cable"],
+  ["chemins de câbles", "chemin-cable"],
+  ["goulottes", "chemin-cable"],
+  ["vmc", "vmc"],
+  ["alarme", "alarme"],
+  ["contrôles d'accès", "controle-acces"],
+  ["portail", "portail"],
+  ["porte", "garage"],
+  ["rj 45", "rj45"],
+  ["rj45", "rj45"],
+  ["domotique", "domotique"],
+  ["photovoltaïque", "photovoltaique"],
+  ["irve", "irve"],
+  ["tgbt", "tgbt"],
+  ["armoire de distribution", "tgbt"],
+  ["tableau de communication", "tgbt"],
+  ["gtl", "tgbt"],
+];
+function topicIconType(nom) {
+  const n = nom.toLowerCase();
+  for (const [kw, type] of COURS_ICON_KEYWORDS) {
+    if (n.includes(kw)) return type;
+  }
+  return null;
+}
 
 function buildCoursIndex() {
   const list = [];
@@ -300,6 +360,7 @@ function buildCoursIndex() {
         semaine: sem.semaine,
         periode: sem.periode,
         theme: sem.theme,
+        emoji: sem.emoji,
         nom: topic.nom,
         points,
         atelierId: COURS_ATELIER_LINKS[topic.nom] || null,
@@ -332,22 +393,70 @@ function renderCoursTable(filter) {
   });
 }
 
+function renderCoursIllustration(c, exo) {
+  const box = document.getElementById("cours-detail-illustration");
+  box.innerHTML = "";
+  if (exo) {
+    box.appendChild(buildExoSchema(exo));
+    box.appendChild(buildExoLegend(exo));
+    return;
+  }
+  const iconType = topicIconType(c.nom);
+  if (iconType) {
+    box.innerHTML = `<div class="cours-icon-banner">${compIcon(iconType)}</div>`;
+  } else {
+    box.innerHTML = `<div class="cours-icon-banner cours-icon-emoji">${c.emoji}</div>`;
+  }
+}
+
+function updateCoursNav() {
+  const pos = document.getElementById("cours-nav-pos");
+  pos.textContent = `Sujet ${currentCoursDetailIndex + 1} / ${COURS_INDEX.length}`;
+  const atStart = currentCoursDetailIndex <= 0;
+  const atEnd = currentCoursDetailIndex >= COURS_INDEX.length - 1;
+  ["btn-cours-prev", "btn-cours-prev-bottom"].forEach(id => document.getElementById(id).disabled = atStart);
+  ["btn-cours-next", "btn-cours-next-bottom"].forEach(id => document.getElementById(id).disabled = atEnd);
+}
+function goCoursPrev() {
+  if (currentCoursDetailIndex > 0) openCoursDetail(COURS_INDEX[currentCoursDetailIndex - 1]);
+}
+function goCoursNext() {
+  if (currentCoursDetailIndex < COURS_INDEX.length - 1) openCoursDetail(COURS_INDEX[currentCoursDetailIndex + 1]);
+}
+
 function openCoursDetail(c) {
   markCoursRead(c.nom);
+  currentCoursDetailIndex = COURS_INDEX.indexOf(c);
+
   document.getElementById("cours-detail-title").textContent = c.nom;
   document.getElementById("cours-detail-meta").textContent =
     `Semaine ${c.semaine} (${c.periode}) — ${c.theme}`;
+
+  const exo = c.atelierId ? ATELIER_EXERCISES.find(e => e.id === c.atelierId) : null;
+  renderCoursIllustration(c, exo);
+
+  document.getElementById("cours-detail-video").href =
+    "https://www.youtube.com/results?search_query=" + encodeURIComponent(c.nom + " électricité");
+
+  const allPoints = c.points.slice();
+  if (exo) {
+    const seen = new Set(allPoints);
+    exo.components.forEach(comp => {
+      if (comp.info && !seen.has(comp.info)) { seen.add(comp.info); allPoints.push(comp.info); }
+    });
+  }
   const ul = document.getElementById("cours-detail-points");
   ul.innerHTML = "";
-  if (c.points.length === 0) {
+  if (allPoints.length === 0) {
     ul.innerHTML = `<li>Pas de fiche disponible pour ce sujet.</li>`;
   } else {
-    c.points.forEach(p => {
+    allPoints.forEach(p => {
       const li = document.createElement("li");
       li.textContent = p;
       ul.appendChild(li);
     });
   }
+
   const atelierBox = document.getElementById("cours-detail-atelier");
   if (c.atelierId) {
     atelierBox.classList.remove("hidden");
@@ -359,8 +468,16 @@ function openCoursDetail(c) {
     atelierBox.classList.add("hidden");
     atelierBox.innerHTML = "";
   }
+
+  updateCoursNav();
+  window.scrollTo(0, 0);
   showView("coursDetail");
 }
+
+document.getElementById("btn-cours-prev").addEventListener("click", goCoursPrev);
+document.getElementById("btn-cours-next").addEventListener("click", goCoursNext);
+document.getElementById("btn-cours-prev-bottom").addEventListener("click", goCoursPrev);
+document.getElementById("btn-cours-next-bottom").addEventListener("click", goCoursNext);
 
 document.getElementById("btn-cours").addEventListener("click", () => {
   renderCoursTable(document.getElementById("cours-search").value);

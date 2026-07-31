@@ -137,10 +137,21 @@
 
   <section id="view-cours-detail" class="view hidden">
     <button class="btn btn-back" id="btn-back-cours-detail">← Retour aux cours</button>
+    <div class="cours-nav">
+      <button id="btn-cours-prev">← Précédent</button>
+      <span id="cours-nav-pos" class="cours-nav-pos"></span>
+      <button id="btn-cours-next">Suivant →</button>
+    </div>
     <h2 id="cours-detail-title"></h2>
     <p id="cours-detail-meta" class="cours-detail-meta"></p>
+    <div id="cours-detail-illustration" class="cours-detail-illustration"></div>
+    <a id="cours-detail-video" class="cours-video-link" target="_blank" rel="noopener">🎥 Rechercher une vidéo sur ce sujet</a>
     <ul id="cours-detail-points" class="cours-detail-points"></ul>
     <div id="cours-detail-atelier" class="cours-detail-atelier hidden"></div>
+    <div class="cours-nav cours-nav-bottom">
+      <button id="btn-cours-prev-bottom">← Précédent</button>
+      <button id="btn-cours-next-bottom">Suivant →</button>
+    </div>
   </section>
 
 </main>

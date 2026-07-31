@@ -178,7 +178,63 @@ const COMP_ICONS = {
     <rect x="6" y="10" width="38" height="30" rx="4" fill="#f3e9f8" stroke="#7b3fa0" stroke-width="2"/>
     <text x="25" y="30" font-size="14" text-anchor="middle" fill="#7b3fa0" font-weight="700">Y</text>
     <path d="M36 8 q4 -4 8 0" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>
-    <path d="M38 5 q6 -6 12 0" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>` }
+    <path d="M38 5 q6 -6 12 0" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>` },
+  // ---- Icônes utilisées uniquement comme illustrations de cours (pas de montage atelier associé) ----
+  fusible: { vb: "0 0 60 30", w: 42, h: 21, svg: `
+    <rect x="4" y="8" width="52" height="14" rx="7" fill="#fdf6e3" stroke="#8a6d00" stroke-width="2"/>
+    <line x1="20" y1="15" x2="40" y2="15" stroke="#c0392b" stroke-width="2"/>
+    <circle cx="8" cy="15" r="3" fill="#888"/>
+    <circle cx="52" cy="15" r="3" fill="#888"/>` },
+  parafoudre: { vb: "0 0 50 60", w: 34, h: 40, svg: `
+    <rect x="6" y="4" width="38" height="44" rx="4" fill="#fff" stroke="#333" stroke-width="2"/>
+    <path d="M28 10 L18 28 h8 l-6 16 16 -22 h-9 z" fill="#e08a1e"/>
+    <line x1="25" y1="48" x2="25" y2="56" stroke="#2e8b2e" stroke-width="3"/>` },
+  "protection-ip": { vb: "0 0 50 55", w: 32, h: 35, svg: `
+    <path d="M25 3 L45 10 V27 Q45 42 25 52 Q5 42 5 27 V10 Z" fill="#eaf3fc" stroke="#2f6fd1" stroke-width="2"/>
+    <path d="M25 20 q7 10 0 16 q-7 -6 0 -16 Z" fill="#2f6fd1"/>` },
+  "salle-bain": { vb: "0 0 60 40", w: 42, h: 28, svg: `
+    <path d="M6 20 h48 v6 a10 10 0 0 1 -10 10 H16 A10 10 0 0 1 6 26 Z" fill="#eaf3fc" stroke="#2f6fd1" stroke-width="2"/>
+    <line x1="2" y1="20" x2="58" y2="20" stroke="#2f6fd1" stroke-width="2"/>
+    <circle cx="12" cy="14" r="3" fill="#2f6fd1"/>` },
+  cable: { vb: "0 0 60 30", w: 44, h: 22, svg: `
+    <path d="M4 15 q6 -12 12 0 t12 0 t12 0 t12 0" fill="none" stroke="#e08a1e" stroke-width="3"/>` },
+  "chemin-cable": { vb: "0 0 70 30", w: 50, h: 21, svg: `
+    <rect x="2" y="10" width="66" height="14" fill="#e8e8e8" stroke="#666" stroke-width="1.5"/>
+    ${[10, 20, 30, 40, 50, 60].map(x => `<line x1="${x}" y1="10" x2="${x}" y2="24" stroke="#666" stroke-width="1"/>`).join("")}` },
+  alarme: { vb: "0 0 40 45", w: 28, h: 32, svg: `
+    <path d="M20 4 Q10 4 10 18 L7 30 h26 l-3 -12 Q30 4 20 4 Z" fill="#f5d0d0" stroke="#c0392b" stroke-width="2"/>
+    <circle cx="20" cy="36" r="4" fill="#c0392b"/>` },
+  "controle-acces": { vb: "0 0 40 50", w: 26, h: 33, svg: `
+    <rect x="6" y="4" width="28" height="40" rx="4" fill="#fff" stroke="#333" stroke-width="2"/>
+    <rect x="12" y="12" width="16" height="10" rx="2" fill="#2f6fd1"/>
+    <circle cx="20" cy="32" r="3" fill="#333"/>` },
+  portail: { vb: "0 0 70 40", w: 48, h: 27, svg: `
+    <line x1="4" y1="36" x2="66" y2="36" stroke="#666" stroke-width="2"/>
+    <rect x="8" y="10" width="24" height="26" fill="none" stroke="#555" stroke-width="2"/>
+    <line x1="8" y1="10" x2="32" y2="36" stroke="#555" stroke-width="1.5"/>
+    <line x1="32" y1="10" x2="8" y2="36" stroke="#555" stroke-width="1.5"/>
+    <rect x="8" y="4" width="6" height="8" fill="#333"/>` },
+  garage: { vb: "0 0 50 50", w: 34, h: 34, svg: `
+    <path d="M4 46 V18 L25 4 L46 18 V46 Z" fill="none" stroke="#333" stroke-width="2"/>
+    ${[24, 30, 36, 42].map(y => `<line x1="8" y1="${y}" x2="42" y2="${y}" stroke="#333" stroke-width="1.3"/>`).join("")}` },
+  rj45: { vb: "0 0 40 50", w: 26, h: 33, svg: `
+    <rect x="10" y="4" width="20" height="30" rx="2" fill="#eee" stroke="#333" stroke-width="1.5"/>
+    ${[13, 17, 21, 25, 29].map(x => `<line x1="${x}" y1="34" x2="${x}" y2="42" stroke="#e08a1e" stroke-width="1.3"/>`).join("")}` },
+  domotique: { vb: "0 0 50 50", w: 34, h: 34, svg: `
+    <path d="M25 6 L46 22 V44 H4 V22 Z" fill="#eef6ee" stroke="#2e8b2e" stroke-width="2"/>
+    <path d="M18 30 a10 10 0 0 1 14 0" fill="none" stroke="#2e8b2e" stroke-width="1.5"/>
+    <circle cx="25" cy="36" r="2" fill="#2e8b2e"/>` },
+  photovoltaique: { vb: "0 0 60 40", w: 42, h: 28, svg: `
+    <rect x="4" y="6" width="52" height="30" fill="#1f3b5c" stroke="#333" stroke-width="2"/>
+    ${[17, 30, 43].map(x => `<line x1="${x}" y1="6" x2="${x}" y2="36" stroke="#5b8ac0" stroke-width="1.3"/>`).join("")}
+    <line x1="4" y1="21" x2="56" y2="21" stroke="#5b8ac0" stroke-width="1.3"/>` },
+  irve: { vb: "0 0 40 50", w: 26, h: 33, svg: `
+    <rect x="8" y="4" width="24" height="34" rx="4" fill="#fff" stroke="#333" stroke-width="2"/>
+    <circle cx="20" cy="16" r="6" fill="none" stroke="#2e8b2e" stroke-width="1.5"/>
+    <path d="M20 32 l-4 8 h8 z" fill="#e08a1e"/>` },
+  tgbt: { vb: "0 0 60 60", w: 40, h: 40, svg: `
+    <rect x="4" y="4" width="52" height="52" rx="3" fill="#f6f8f5" stroke="#666" stroke-width="2"/>
+    ${[[12, 12], [30, 12], [12, 26], [30, 26], [12, 40], [30, 40]].map(([x, y]) => `<rect x="${x}" y="${y}" width="14" height="10" fill="#fff" stroke="#333" stroke-width="1"/>`).join("")}` }
 };
 
 function compIcon(type) {
@@ -596,32 +652,32 @@ function checkCircuit() {
   resultBox.classList.remove("hidden");
 }
 
-function labelOf(ref) {
-  const comp = findComp(currentExo, ref.comp);
-  const term = findTerm(currentExo, ref.comp, ref.term);
+function labelOfExo(exo, compId, termId) {
+  const comp = findComp(exo, compId);
+  const term = findTerm(exo, compId, termId);
   return `${comp.label} (${term.label})`;
 }
+function labelOf(ref) {
+  return labelOfExo(currentExo, ref.comp, ref.term);
+}
 
-// ---------- Aide : afficher la solution ----------
-function openHelp() {
-  const modal = document.getElementById("help-modal");
-  const body = document.getElementById("help-body");
-  body.innerHTML = "";
-
+// ---------- Schéma statique réutilisable d'un montage (aide + fiches de cours) ----------
+function buildExoSchema(exo) {
+  const patternId = "terre-pattern-" + Math.random().toString(36).slice(2);
   const wrap = document.createElement("div");
-  wrap.id = "help-canvas-wrap";
+  wrap.className = "exo-schema-wrap";
   const canvas = document.createElement("div");
-  canvas.id = "help-canvas";
-  canvas.style.width = currentExo.canvasW + "px";
-  canvas.style.height = currentExo.canvasH + "px";
+  canvas.className = "exo-schema-canvas";
+  canvas.style.width = exo.canvasW + "px";
+  canvas.style.height = exo.canvasH + "px";
 
   const svg = document.createElementNS(SVG_NS, "svg");
-  svg.setAttribute("width", currentExo.canvasW);
-  svg.setAttribute("height", currentExo.canvasH);
-  addTerrePattern(svg, "terre-pattern-help");
+  svg.setAttribute("width", exo.canvasW);
+  svg.setAttribute("height", exo.canvasH);
+  addTerrePattern(svg, patternId);
   canvas.appendChild(svg);
 
-  currentExo.components.forEach(comp => {
+  exo.components.forEach(comp => {
     const box = document.createElement("div");
     box.className = `comp-box comp-${comp.family}`;
     box.style.left = comp.x + "px";
@@ -640,15 +696,15 @@ function openHelp() {
     });
   });
 
-  currentExo.connections.forEach(c => {
+  exo.connections.forEach(c => {
     const [c1, t1] = c.from.split(".");
     const [c2, t2] = c.to.split(".");
-    const p1 = findTerm(currentExo, c1, t1);
-    const p2 = findTerm(currentExo, c2, t2);
+    const p1 = findTerm(exo, c1, t1);
+    const p2 = findTerm(exo, c2, t2);
     const line = document.createElementNS(SVG_NS, "path");
     line.setAttribute("d", elbowPath(p1.x, p1.y, p2.x, p2.y));
     line.setAttribute("fill", "none");
-    line.setAttribute("stroke", strokeForRole(c.role, "terre-pattern-help"));
+    line.setAttribute("stroke", strokeForRole(c.role, patternId));
     line.setAttribute("stroke-width", "5");
     line.setAttribute("stroke-linecap", "round");
     line.setAttribute("stroke-linejoin", "round");
@@ -656,11 +712,13 @@ function openHelp() {
   });
 
   wrap.appendChild(canvas);
-  body.appendChild(wrap);
+  return wrap;
+}
 
+function buildExoLegend(exo) {
   const list = document.createElement("ul");
   list.className = "help-list";
-  currentExo.connections.forEach(c => {
+  exo.connections.forEach(c => {
     const [c1, t1] = c.from.split(".");
     const [c2, t2] = c.to.split(".");
     const role = WIRE_ROLES[c.role];
@@ -668,21 +726,34 @@ function openHelp() {
       ? "background:repeating-linear-gradient(45deg,#2e8b2e,#2e8b2e 3px,#e8d21e 3px,#e8d21e 6px)"
       : `background:${role.color}`;
     list.innerHTML += `<li><span class="swatch" style="${swatchStyle}"></span>
-      <strong>${role.label}</strong> : ${labelOf({ comp: c1, term: t1 })} → ${labelOf({ comp: c2, term: t2 })}</li>`;
+      <strong>${role.label}</strong> : ${labelOfExo(exo, c1, t1)} → ${labelOfExo(exo, c2, t2)}</li>`;
   });
-  body.appendChild(list);
+  return list;
+}
 
-  if (currentExo.components.some(c => c.calibreOptions) || currentExo.sectionOptions) {
-    const infos = document.createElement("p");
-    infos.className = "help-infos";
-    let txt = "";
-    currentExo.components.forEach(c => {
-      if (c.calibreOptions) txt += `Calibre "${c.label}" : ${c.calibreCorrect} A. `;
-    });
-    if (currentExo.sectionOptions) txt += `Section de câble : ${currentExo.sectionCorrect} mm².`;
-    infos.textContent = txt;
-    body.appendChild(infos);
-  }
+function buildExoInfos(exo) {
+  if (!exo.components.some(c => c.calibreOptions) && !exo.sectionOptions) return null;
+  const infos = document.createElement("p");
+  infos.className = "help-infos";
+  let txt = "";
+  exo.components.forEach(c => {
+    if (c.calibreOptions) txt += `Calibre "${c.label}" : ${c.calibreCorrect} A. `;
+  });
+  if (exo.sectionOptions) txt += `Section de câble : ${exo.sectionCorrect} mm².`;
+  infos.textContent = txt;
+  return infos;
+}
+
+// ---------- Aide : afficher la solution ----------
+function openHelp() {
+  const modal = document.getElementById("help-modal");
+  const body = document.getElementById("help-body");
+  body.innerHTML = "";
+
+  body.appendChild(buildExoSchema(currentExo));
+  body.appendChild(buildExoLegend(currentExo));
+  const infos = buildExoInfos(currentExo);
+  if (infos) body.appendChild(infos);
 
   modal.classList.remove("hidden");
 }
