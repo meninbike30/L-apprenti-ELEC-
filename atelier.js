@@ -485,26 +485,40 @@ document.getElementById("btn-zoom-in").addEventListener("click", () => setZoom(c
 document.getElementById("btn-zoom-out").addEventListener("click", () => setZoom(canvasZoom - ZOOM_STEP));
 document.getElementById("btn-zoom-fit").addEventListener("click", fitZoom);
 
-// ---------- Plein écran de l'atelier ----------
+// ---------- Plein écran de l'atelier (avec bascule en paysage) ----------
+function lockLandscape() {
+  // Fonctionne sur Android/Chrome une fois en plein écran. Sur iOS Safari,
+  // l'API n'existe pas : le CSS de secours (règle @media orientation:portrait
+  // sur .fs-atelier) prend le relais tant que le téléphone n'est pas tourné.
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock("landscape").catch(() => {});
+  }
+}
+
 function enterAtelierFullscreen() {
   document.body.classList.add("fs-atelier");
   const btn = document.getElementById("btn-fullscreen");
   if (btn) btn.classList.add("active");
   const el = document.getElementById("view-atelier-workshop");
   if (el && el.requestFullscreen) {
-    el.requestFullscreen().catch(() => {});
+    el.requestFullscreen().then(lockLandscape).catch(lockLandscape);
+  } else {
+    lockLandscape();
   }
-  setTimeout(fitZoom, 50);
+  setTimeout(fitZoom, 150);
 }
 
 function exitAtelierFullscreen() {
   document.body.classList.remove("fs-atelier");
   const btn = document.getElementById("btn-fullscreen");
   if (btn) btn.classList.remove("active");
+  if (screen.orientation && screen.orientation.unlock) {
+    try { screen.orientation.unlock(); } catch (e) {}
+  }
   if (document.fullscreenElement) {
     document.exitFullscreen().catch(() => {});
   }
-  setTimeout(fitZoom, 50);
+  setTimeout(fitZoom, 150);
 }
 
 function toggleAtelierFullscreen() {
