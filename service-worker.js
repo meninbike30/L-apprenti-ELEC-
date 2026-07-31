@@ -1,4 +1,4 @@
-const CACHE_NAME = "eeb-quiz-v1";
+const CACHE_NAME = "eeb-quiz-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -29,18 +29,17 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// Réseau en priorité : on sert toujours la dernière version en ligne,
+// et on ne retombe sur le cache que si l'appareil est hors ligne.
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request)
-        .then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          return response;
-        })
-        .catch(() => cached);
-    })
+    fetch(event.request)
+      .then((response) => {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
