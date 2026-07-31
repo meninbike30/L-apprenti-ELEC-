@@ -497,14 +497,28 @@ function lockLandscape() {
   }
 }
 
+// Ne sert qu'à savoir si on a vraiment réussi à passer en plein écran
+// natif (API Fullscreen). Tant que ce n'est pas vrai, on ignore tout
+// évènement "fullscreenchange" : sur certains navigateurs (Safari iOS
+// notamment), une tentative de plein écran échouée peut quand même
+// déclencher cet évènement, ce qui annulait aussitôt notre propre mode
+// plein écran (CSS) sans que l'utilisateur n'ait rien demandé.
+let nativeFullscreenEngaged = false;
+
 function enterAtelierFullscreen() {
   document.body.classList.add("fs-atelier");
   const btn = document.getElementById("btn-fullscreen");
   if (btn) btn.classList.add("active");
   const el = document.getElementById("view-atelier-workshop");
-  if (el && el.requestFullscreen) {
-    el.requestFullscreen().then(lockLandscape).catch(lockLandscape);
-  } else {
+  try {
+    if (el && el.requestFullscreen) {
+      el.requestFullscreen()
+        .then(() => { nativeFullscreenEngaged = true; lockLandscape(); })
+        .catch(lockLandscape);
+    } else {
+      lockLandscape();
+    }
+  } catch (e) {
     lockLandscape();
   }
   setTimeout(fitZoom, 150);
@@ -512,6 +526,7 @@ function enterAtelierFullscreen() {
 
 function exitAtelierFullscreen() {
   document.body.classList.remove("fs-atelier");
+  nativeFullscreenEngaged = false;
   const btn = document.getElementById("btn-fullscreen");
   if (btn) btn.classList.remove("active");
   if (screen.orientation && screen.orientation.unlock) {
@@ -543,10 +558,13 @@ window.addEventListener("orientationchange", () => {
   if (document.body.classList.contains("fs-atelier")) setTimeout(fitZoom, 250);
 });
 
-// Si l'utilisateur quitte le plein écran natif (touche Echap, geste...),
-// on synchronise notre propre mode plein écran.
+// Si l'utilisateur quitte le plein écran natif (touche Echap, geste...)
+// APRES qu'on a confirmé l'avoir réellement obtenu, on synchronise notre
+// propre mode plein écran. On ignore l'évènement sinon (voir commentaire
+// sur nativeFullscreenEngaged plus haut).
 document.addEventListener("fullscreenchange", () => {
-  if (!document.fullscreenElement && document.body.classList.contains("fs-atelier")) {
+  if (nativeFullscreenEngaged && !document.fullscreenElement && document.body.classList.contains("fs-atelier")) {
+    nativeFullscreenEngaged = false;
     document.body.classList.remove("fs-atelier");
     const btn = document.getElementById("btn-fullscreen");
     if (btn) btn.classList.remove("active");

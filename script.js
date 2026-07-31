@@ -3,7 +3,7 @@
 // Numéro de version affiché en haut de l'appli : à incrémenter à chaque
 // mise à jour poussée sur GitHub, pour que les utilisateurs puissent
 // vérifier facilement s'ils ont bien la dernière version.
-const APP_VERSION = "2.4";
+const APP_VERSION = "2.5";
 const versionBadge = document.getElementById("app-version");
 if (versionBadge) versionBadge.textContent = "v" + APP_VERSION;
 
