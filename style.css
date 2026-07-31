@@ -478,6 +478,7 @@ body {
 }
 .zoom-controls button:active { background: var(--green); color: white; }
 .zoom-controls .zoom-fit { width: auto; padding: 0 10px; font-size: 0.85rem; }
+#btn-fullscreen { white-space: nowrap; }
 .atelier-hint-static {
   color: var(--muted);
   font-size: 0.85rem;
@@ -578,7 +579,7 @@ body {
   overflow: auto;
   max-height: 62vh;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x pan-y pinch-zoom;
+  touch-action: pan-x pan-y;
   background: var(--card);
   border-radius: var(--radius);
   box-shadow: 0 2px 10px rgba(0,0,0,0.06);
@@ -704,6 +705,34 @@ body {
 }
 .atelier-result ul { margin: 8px 0 0; padding-left: 20px; }
 .atelier-result li { margin-bottom: 4px; }
+
+/* ---------- Atelier : mode plein écran ---------- */
+body.fs-atelier { overflow: hidden; }
+body.fs-atelier .topbar { display: none; }
+body.fs-atelier #app { padding: 0; max-width: none; }
+body.fs-atelier #view-atelier-workshop {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: var(--bg, #f4f7f3);
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px;
+  margin: 0;
+  overflow: hidden;
+}
+body.fs-atelier .atelier-hint-static,
+body.fs-atelier .atelier-legend-note { display: none; }
+body.fs-atelier #atelier-exo-title { margin: 4px 0; font-size: 1.1rem; }
+body.fs-atelier .role-palette { margin-bottom: 6px; }
+body.fs-atelier .atelier-canvas-wrap {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+body.fs-atelier .section-select-wrap,
+body.fs-atelier .atelier-actions { flex-shrink: 0; }
+#btn-fullscreen.active { background: var(--green); color: white; }
 
 /* ---------- Modale d'aide ---------- */
 .modal {

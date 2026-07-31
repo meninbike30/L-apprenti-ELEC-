@@ -323,8 +323,8 @@ function openExercise(exoId) {
 
   renderRolePalette();
   renderCanvas();
-  fitZoom();
   showView("atelierWork");
+  enterAtelierFullscreen();
 }
 
 // ---------- Palette de couleurs de fils ----------
@@ -475,13 +475,100 @@ function fitZoom() {
   const wrap = document.getElementById("atelier-canvas-wrap");
   if (!wrap || !currentExo) return;
   const availW = wrap.clientWidth - 20;
-  const z = Math.min(1, availW / currentExo.canvasW);
+  const availH = wrap.clientHeight - 20;
+  let z = Math.min(availW / currentExo.canvasW, availH / currentExo.canvasH);
+  z = Math.min(ZOOM_MAX, z);
   setZoom(Math.max(ZOOM_MIN, z));
 }
 
 document.getElementById("btn-zoom-in").addEventListener("click", () => setZoom(canvasZoom + ZOOM_STEP));
 document.getElementById("btn-zoom-out").addEventListener("click", () => setZoom(canvasZoom - ZOOM_STEP));
 document.getElementById("btn-zoom-fit").addEventListener("click", fitZoom);
+
+// ---------- Plein écran de l'atelier ----------
+function enterAtelierFullscreen() {
+  document.body.classList.add("fs-atelier");
+  const btn = document.getElementById("btn-fullscreen");
+  if (btn) btn.classList.add("active");
+  const el = document.getElementById("view-atelier-workshop");
+  if (el && el.requestFullscreen) {
+    el.requestFullscreen().catch(() => {});
+  }
+  setTimeout(fitZoom, 50);
+}
+
+function exitAtelierFullscreen() {
+  document.body.classList.remove("fs-atelier");
+  const btn = document.getElementById("btn-fullscreen");
+  if (btn) btn.classList.remove("active");
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {});
+  }
+  setTimeout(fitZoom, 50);
+}
+
+function toggleAtelierFullscreen() {
+  if (document.body.classList.contains("fs-atelier")) {
+    exitAtelierFullscreen();
+  } else {
+    enterAtelierFullscreen();
+  }
+}
+
+document.getElementById("btn-fullscreen").addEventListener("click", toggleAtelierFullscreen);
+
+// Si l'utilisateur quitte le plein écran natif (touche Echap, geste...),
+// on synchronise notre propre mode plein écran.
+document.addEventListener("fullscreenchange", () => {
+  if (!document.fullscreenElement && document.body.classList.contains("fs-atelier")) {
+    document.body.classList.remove("fs-atelier");
+    const btn = document.getElementById("btn-fullscreen");
+    if (btn) btn.classList.remove("active");
+    setTimeout(fitZoom, 50);
+  }
+});
+
+// ---------- Pincement à deux doigts pour zoomer, limité au canevas ----------
+(function setupPinchZoom() {
+  const wrap = document.getElementById("atelier-canvas-wrap");
+  if (!wrap) return;
+  const pointers = new Map();
+  let pinchStartDist = 0;
+  let pinchStartZoom = 1;
+
+  function dist(a, b) {
+    return Math.hypot(a.x - b.x, a.y - b.y);
+  }
+
+  wrap.addEventListener("pointerdown", (evt) => {
+    if (evt.pointerType !== "touch") return;
+    pointers.set(evt.pointerId, { x: evt.clientX, y: evt.clientY });
+    if (pointers.size === 2) {
+      const pts = [...pointers.values()];
+      pinchStartDist = dist(pts[0], pts[1]);
+      pinchStartZoom = canvasZoom;
+    }
+  });
+
+  wrap.addEventListener("pointermove", (evt) => {
+    if (!pointers.has(evt.pointerId)) return;
+    pointers.set(evt.pointerId, { x: evt.clientX, y: evt.clientY });
+    if (pointers.size === 2 && pinchStartDist > 0) {
+      evt.preventDefault();
+      const pts = [...pointers.values()];
+      const newDist = dist(pts[0], pts[1]);
+      setZoom(pinchStartZoom * (newDist / pinchStartDist));
+    }
+  });
+
+  function releasePointer(evt) {
+    pointers.delete(evt.pointerId);
+    if (pointers.size < 2) pinchStartDist = 0;
+  }
+  wrap.addEventListener("pointerup", releasePointer);
+  wrap.addEventListener("pointercancel", releasePointer);
+  wrap.addEventListener("pointerleave", releasePointer);
+})();
 
 // ---------- Position d'une borne dans le canvas ----------
 function pointerCanvasPos(evt) {
@@ -771,6 +858,7 @@ document.getElementById("btn-back-atelier-list").addEventListener("click", () =>
   showView("home");
 });
 document.getElementById("btn-quit-atelier").addEventListener("click", () => {
+  exitAtelierFullscreen();
   showView("atelierList");
 });
 document.getElementById("btn-check-circuit").addEventListener("click", checkCircuit);
