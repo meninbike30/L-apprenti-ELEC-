@@ -1,0 +1,16 @@
+{
+  "name": "EEB Alt Nîmes - Entraînement",
+  "short_name": "EEB Entraînement",
+  "description": "Quiz et atelier de câblage pour réviser l'électricité EEB Alt Nîmes.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f4f7f2",
+  "theme_color": "#4d8a2a",
+  "lang": "fr",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

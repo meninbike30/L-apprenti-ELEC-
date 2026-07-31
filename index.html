@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>EEB Alt Nîmes - Entraînement</title>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4d8a2a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EEB Entraînement">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="logo">⚡ Afpa</span>
+    <h1>EEB Alt Nîmes — Entraînement</h1>
+  </div>
+</header>
+
+<main id="app">
+
+  <section id="view-home" class="view">
+    <div class="hero">
+      <h2>Prêt à réviser ? 💪</h2>
+      <p>Choisis une semaine et un sujet, ou tente le Mode Défi pour un mélange de questions au hasard.</p>
+      <div class="hero-buttons">
+        <button id="btn-defi" class="btn btn-primary btn-large">🎲 Mode Défi (questions mélangées)</button>
+        <button id="btn-atelier" class="btn btn-secondary btn-large">🔧 Atelier de câblage</button>
+      </div>
+    </div>
+
+    <div id="semaines-list" class="semaines-list"></div>
+  </section>
+
+  <section id="view-topics" class="view hidden">
+    <button class="btn btn-back" id="btn-back-home">← Retour</button>
+    <h2 id="topics-title"></h2>
+    <div id="topics-list" class="topics-list"></div>
+  </section>
+
+  <section id="view-quiz" class="view hidden">
+    <div class="quiz-header">
+      <button class="btn btn-back" id="btn-quit-quiz">✕ Quitter</button>
+      <div class="quiz-progress">
+        <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+        <span id="progress-label"></span>
+      </div>
+      <div class="quiz-score">Score : <span id="live-score">0</span></div>
+    </div>
+
+    <h2 id="quiz-topic-name"></h2>
+
+    <div class="question-card">
+      <p id="question-text" class="question-text"></p>
+      <div id="options-list" class="options-list"></div>
+      <p id="feedback-text" class="feedback-text hidden"></p>
+      <button id="btn-next" class="btn btn-primary hidden">Suivant →</button>
+    </div>
+  </section>
+
+  <section id="view-result" class="view hidden">
+    <div class="result-card">
+      <h2 id="result-title"></h2>
+      <p id="result-score" class="result-score"></p>
+      <p id="result-msg" class="result-msg"></p>
+      <div class="result-buttons">
+        <button id="btn-retry" class="btn btn-primary">🔁 Rejouer ce sujet</button>
+        <button id="btn-home" class="btn btn-secondary">🏠 Accueil</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-atelier-list" class="view hidden">
+    <button class="btn btn-back" id="btn-back-atelier-list">← Retour</button>
+    <h2>🔧 Atelier de câblage</h2>
+    <p class="atelier-intro">Choisis un montage, tire tes câbles entre les bornes, choisis le bon calibre et la bonne section, puis vérifie ton installation.</p>
+    <div id="atelier-list" class="exo-list"></div>
+  </section>
+
+  <section id="view-atelier-workshop" class="view hidden">
+    <div class="atelier-toolbar">
+      <button class="btn btn-back" id="btn-quit-atelier">← Retour aux exercices</button>
+      <button class="btn btn-secondary" id="btn-help">❓ Aide</button>
+    </div>
+    <h2 id="atelier-exo-title"></h2>
+    <p class="atelier-hint-static">1️⃣ Choisis une couleur de fil &nbsp;•&nbsp; 2️⃣ Clique sur une borne et glisse vers une autre &nbsp;•&nbsp; 3️⃣ Choisis calibre/section &nbsp;•&nbsp; 4️⃣ Vérifie</p>
+
+    <div id="role-palette" class="role-palette"></div>
+    <p class="atelier-legend-note">
+      ℹ️ Seuls le <strong>Neutre (bleu)</strong> et la <strong>Terre (vert/jaune)</strong> sont des couleurs imposées par la norme NF C 15-100.
+      Les autres couleurs (Phase, Retour, Navette, Commande) sont des conventions choisies ici pour bien distinguer chaque fonction à l'écran —
+      dans une installation réelle, la couleur exacte peut varier tant qu'elle n'est ni bleu ni vert/jaune.
+    </p>
+    <p id="atelier-hint" class="atelier-live-hint hidden"></p>
+
+    <div id="atelier-canvas-wrap" class="atelier-canvas-wrap"></div>
+
+    <div id="section-select-wrap" class="section-select-wrap"></div>
+
+    <div class="atelier-actions">
+      <button id="btn-check-circuit" class="btn btn-primary btn-large">✅ Vérifier mon montage</button>
+      <button id="btn-reset-circuit" class="btn btn-secondary">🧹 Recommencer</button>
+    </div>
+
+    <div id="atelier-result" class="atelier-result hidden"></div>
+  </section>
+
+</main>
+
+<div id="info-popup" class="info-popup hidden"></div>
+
+<div id="help-modal" class="modal hidden">
+  <div class="modal-content">
+    <button class="btn btn-back" id="btn-close-help">✕ Fermer</button>
+    <h3>💡 Solution du montage</h3>
+    <div id="help-body"></div>
+  </div>
+</div>
+
+<script src="questions.js"></script>
+<script src="atelier-data.js"></script>
+<script src="script.js"></script>
+<script src="atelier.js"></script>
+<script>
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("service-worker.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
