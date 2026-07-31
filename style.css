@@ -734,22 +734,6 @@ body.fs-atelier .section-select-wrap,
 body.fs-atelier .atelier-actions { flex-shrink: 0; }
 #btn-fullscreen.active { background: var(--green); color: white; }
 
-/* Sur mobile, si le téléphone reste en portrait (rotation verrouillée par
-   l'utilisateur ou API indisponible), on force visuellement l'affichage en
-   paysage : l'utilisateur n'a plus qu'à tourner son téléphone pour que le
-   contenu (déjà pivoté) s'affiche à l'endroit. Dès que l'appareil tourne
-   réellement en paysage, cette règle ne s'applique plus toute seule. */
-@media (max-width: 900px) and (orientation: portrait) {
-  body.fs-atelier #view-atelier-workshop {
-    width: 100vh;
-    height: 100vw;
-    top: 0;
-    left: 0;
-    transform-origin: top left;
-    transform: rotate(90deg) translateY(-100%);
-  }
-}
-
 /* ---------- Indicateur de version ---------- */
 .app-version {
   margin-left: auto;

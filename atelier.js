@@ -487,9 +487,11 @@ document.getElementById("btn-zoom-fit").addEventListener("click", fitZoom);
 
 // ---------- Plein écran de l'atelier (avec bascule en paysage) ----------
 function lockLandscape() {
-  // Fonctionne sur Android/Chrome une fois en plein écran. Sur iOS Safari,
-  // l'API n'existe pas : le CSS de secours (règle @media orientation:portrait
-  // sur .fs-atelier) prend le relais tant que le téléphone n'est pas tourné.
+  // Fonctionne sur Android/Chrome une fois en plein écran (rotation
+  // automatique, comme une vidéo). Sur iOS Safari, l'API n'existe pas :
+  // pas de bascule forcée, il suffit alors de tourner le téléphone à la
+  // main, l'affichage plein écran s'adapte naturellement (voir resize
+  // /orientationchange plus bas).
   if (screen.orientation && screen.orientation.lock) {
     screen.orientation.lock("landscape").catch(() => {});
   }
@@ -530,6 +532,16 @@ function toggleAtelierFullscreen() {
 }
 
 document.getElementById("btn-fullscreen").addEventListener("click", toggleAtelierFullscreen);
+
+// Quand l'utilisateur tourne physiquement son téléphone (ou redimensionne
+// la fenêtre), on réajuste le schéma à la nouvelle taille disponible —
+// sans forcer aucune rotation CSS, pour éviter tout affichage instable.
+window.addEventListener("resize", () => {
+  if (document.body.classList.contains("fs-atelier")) fitZoom();
+});
+window.addEventListener("orientationchange", () => {
+  if (document.body.classList.contains("fs-atelier")) setTimeout(fitZoom, 250);
+});
 
 // Si l'utilisateur quitte le plein écran natif (touche Echap, geste...),
 // on synchronise notre propre mode plein écran.
