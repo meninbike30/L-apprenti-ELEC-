@@ -734,6 +734,39 @@ body.fs-atelier .section-select-wrap,
 body.fs-atelier .atelier-actions { flex-shrink: 0; }
 #btn-fullscreen.active { background: var(--green); color: white; }
 
+/* En paysage sur téléphone, la hauteur d'écran est très limitée : on
+   compacte au maximum tout ce qui n'est pas le schéma de câblage lui-même,
+   pour que la zone de travail (glisser les câbles) ait vraiment de la place. */
+@media (orientation: landscape) and (max-height: 500px) {
+  body.fs-atelier #view-atelier-workshop { padding: 4px 8px; }
+  body.fs-atelier #atelier-exo-title { display: none; }
+  body.fs-atelier .atelier-toolbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-bottom: 4px;
+    gap: 6px;
+  }
+  body.fs-atelier .atelier-toolbar .btn-back { padding: 4px 0; font-size: 0.8rem; white-space: nowrap; }
+  body.fs-atelier .zoom-controls button { width: 26px; height: 26px; font-size: 0.85rem; }
+  body.fs-atelier .zoom-controls .zoom-fit { padding: 0 6px; font-size: 0.72rem; }
+  body.fs-atelier #btn-fullscreen,
+  body.fs-atelier #btn-help { padding: 5px 10px; font-size: 0.78rem; white-space: nowrap; }
+  body.fs-atelier .role-palette {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    margin-bottom: 4px;
+    padding-bottom: 2px;
+  }
+  body.fs-atelier .role-btn { padding: 4px 10px; font-size: 0.75rem; white-space: nowrap; }
+  body.fs-atelier .role-btn .swatch { width: 11px; height: 11px; }
+  body.fs-atelier .section-select-wrap { margin: 4px 0; }
+  body.fs-atelier .section-select-wrap select { padding: 5px 8px; font-size: 0.8rem; }
+  body.fs-atelier .atelier-actions { margin-top: 4px; gap: 8px; }
+  body.fs-atelier .atelier-actions .btn { padding: 6px 12px; font-size: 0.82rem; }
+  body.fs-atelier .atelier-result { margin-top: 6px; padding: 8px 12px; font-size: 0.82rem; }
+}
+
 /* ---------- Indicateur de version ---------- */
 .app-version {
   margin-left: auto;
