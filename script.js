@@ -7,6 +7,8 @@ const views = {
   result: document.getElementById("view-result"),
   atelierList: document.getElementById("view-atelier-list"),
   atelierWork: document.getElementById("view-atelier-workshop"),
+  cours: document.getElementById("view-cours"),
+  coursDetail: document.getElementById("view-cours-detail"),
 };
 
 function showView(name) {
@@ -19,6 +21,61 @@ let currentQuestions = [];
 let currentIndex = 0;
 let currentScore = 0;
 let currentTopicName = "";
+
+// ---------- Persistance : scores des QCM ----------
+function loadScores() {
+  try { return JSON.parse(localStorage.getItem("eeb-scores") || "{}"); }
+  catch (e) { return {}; }
+}
+function saveScore(topicName, score, total) {
+  const scores = loadScores();
+  const pct = Math.round((score / total) * 100);
+  const prev = scores[topicName];
+  scores[topicName] = {
+    lastScore: score,
+    lastTotal: total,
+    lastPct: pct,
+    bestPct: prev ? Math.max(prev.bestPct, pct) : pct,
+    attempts: prev ? prev.attempts + 1 : 1,
+    date: new Date().toISOString(),
+  };
+  localStorage.setItem("eeb-scores", JSON.stringify(scores));
+  return scores[topicName];
+}
+function getScore(topicName) {
+  return loadScores()[topicName] || null;
+}
+
+// ---------- Persistance : cours déjà consultés ----------
+function loadReadCourses() {
+  try { return JSON.parse(localStorage.getItem("eeb-cours-read") || "[]"); }
+  catch (e) { return []; }
+}
+function markCoursRead(nom) {
+  const list = loadReadCourses();
+  if (!list.includes(nom)) {
+    list.push(nom);
+    localStorage.setItem("eeb-cours-read", JSON.stringify(list));
+  }
+}
+function isCoursRead(nom) {
+  return loadReadCourses().includes(nom);
+}
+
+// ---------- Lien QCM -> fiche de cours ----------
+function findCoursByTopicName(nom) {
+  return COURS_INDEX.find(c => c.nom === nom) || null;
+}
+function updateCoursLinkButton(btn) {
+  const entry = findCoursByTopicName(currentTopicName);
+  if (entry && entry.points.length > 0) {
+    btn.classList.remove("hidden");
+    btn.onclick = () => openCoursDetail(entry);
+  } else {
+    btn.classList.add("hidden");
+    btn.onclick = null;
+  }
+}
 
 // ---------- Accueil : liste des semaines ----------
 function renderHome() {
@@ -54,7 +111,18 @@ function renderTopics(semaineData) {
   semaineData.topics.forEach(topic => {
     const card = document.createElement("div");
     card.className = "topic-card";
-    card.innerHTML = `<h4>${topic.nom}</h4><span>${topic.questions.length} questions</span>`;
+    const score = getScore(topic.nom);
+    const read = isCoursRead(topic.nom);
+    const scoreBadge = score
+      ? `<span class="topic-score-badge${score.bestPct < 50 ? " low" : ""}">🏆 ${score.bestPct}%</span>`
+      : "";
+    const readBadge = read ? `<span class="topic-read-badge" title="Cours déjà consulté">📖</span>` : "";
+    card.innerHTML = `
+      <h4>${topic.nom}</h4>
+      <div class="topic-card-footer">
+        <span>${topic.questions.length} questions</span>
+        <span>${readBadge}${scoreBadge}</span>
+      </div>`;
     card.addEventListener("click", () => startQuiz(topic.nom, topic.questions));
     container.appendChild(card);
   });
@@ -89,6 +157,7 @@ function startQuiz(topicName, questions) {
   currentIndex = 0;
   currentScore = 0;
   document.getElementById("quiz-topic-name").textContent = topicName;
+  updateCoursLinkButton(document.getElementById("btn-quiz-to-cours"));
   showView("quiz");
   renderQuestion();
 }
@@ -158,12 +227,23 @@ function showResult() {
   document.getElementById("result-title").textContent = currentTopicName;
   document.getElementById("result-score").textContent = `${currentScore} / ${total} (${pct}%)`;
 
+  const saved = saveScore(currentTopicName, currentScore, total);
+  const bestEl = document.getElementById("result-best");
+  if (saved.attempts > 1) {
+    bestEl.textContent = `📊 Meilleur score sur ce sujet : ${saved.bestPct}% (${saved.attempts} tentatives)`;
+    bestEl.classList.remove("hidden");
+  } else {
+    bestEl.classList.add("hidden");
+  }
+
   let msg;
   if (pct === 100) msg = "🏆 Score parfait ! Tu maîtrises ce sujet.";
   else if (pct >= 80) msg = "🔥 Très bon niveau, continue comme ça !";
   else if (pct >= 50) msg = "👍 Pas mal, encore un peu de révision et ce sera nickel.";
   else msg = "📘 Ce sujet mérite d'être revu, courage !";
   document.getElementById("result-msg").textContent = msg;
+
+  updateCoursLinkButton(document.getElementById("btn-result-to-cours"));
 
   showView("result");
 }
@@ -184,6 +264,120 @@ document.getElementById("btn-back-home").addEventListener("click", () => {
 });
 document.getElementById("btn-defi").addEventListener("click", startDefi);
 
+// ---------- Cours : fiches détaillées par sujet ----------
+// Lien vers les montages pratiques disponibles dans l'atelier (id ATELIER_EXERCISES)
+const COURS_ATELIER_LINKS = {
+  "Montage Simple Allumage": "simple-allumage",
+  "Montage Va et Vient": "va-et-vient",
+  "Montage Permutateur": "permutateur",
+  "Montage Prise de courant": "prise-de-courant",
+  "Montage Télérupteur": "telerupteur",
+  "Montage Minuterie": "minuterie",
+  "Montage Contacteur HC / HP": "contacteur-hchp",
+  "Montage Interrupteur horaire": "interrupteur-horaire",
+  "Montage Yokis": "module-yokis",
+  "Montage Sonnette (230 V - 12 V)": "sonnette",
+  "Montage Détecteur de mouvement": "detecteur-mouvement",
+  "L'Interrupteur Différentiel": "tableau-differentiel",
+  "Le volet roulant": "volet-roulant",
+  "Le chauffage": "chauffage-fil-pilote",
+  "La VMC": "vmc",
+};
+
+let COURS_INDEX = [];
+
+function buildCoursIndex() {
+  const list = [];
+  QUIZ_DATA.forEach(sem => {
+    sem.topics.forEach(topic => {
+      const seen = new Set();
+      const points = [];
+      topic.questions.forEach(q => {
+        const txt = (q.exp || "").trim();
+        if (txt && !seen.has(txt)) { seen.add(txt); points.push(txt); }
+      });
+      list.push({
+        semaine: sem.semaine,
+        periode: sem.periode,
+        theme: sem.theme,
+        nom: topic.nom,
+        points,
+        atelierId: COURS_ATELIER_LINKS[topic.nom] || null,
+      });
+    });
+  });
+  return list;
+}
+
+function renderCoursTable(filter) {
+  const tbody = document.getElementById("cours-tbody");
+  tbody.innerHTML = "";
+  const f = (filter || "").trim().toLowerCase();
+  const rows = COURS_INDEX.filter(c =>
+    !f || c.nom.toLowerCase().includes(f) || c.theme.toLowerCase().includes(f)
+  );
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4">Aucun sujet ne correspond à la recherche.</td></tr>`;
+    return;
+  }
+  rows.forEach(c => {
+    const tr = document.createElement("tr");
+    if (isCoursRead(c.nom)) tr.classList.add("cours-read");
+    const readMark = isCoursRead(c.nom) ? "📖 " : "";
+    const score = getScore(c.nom);
+    const scoreBadge = score ? `<span class="cours-score-badge">🏆 ${score.bestPct}%</span>` : "";
+    tr.innerHTML = `<td>S${c.semaine}</td><td>${c.theme}</td><td>${readMark}${c.nom}${c.atelierId ? " 🔧" : ""}${scoreBadge}</td><td>${c.points.length}</td>`;
+    tr.addEventListener("click", () => openCoursDetail(c));
+    tbody.appendChild(tr);
+  });
+}
+
+function openCoursDetail(c) {
+  markCoursRead(c.nom);
+  document.getElementById("cours-detail-title").textContent = c.nom;
+  document.getElementById("cours-detail-meta").textContent =
+    `Semaine ${c.semaine} (${c.periode}) — ${c.theme}`;
+  const ul = document.getElementById("cours-detail-points");
+  ul.innerHTML = "";
+  if (c.points.length === 0) {
+    ul.innerHTML = `<li>Pas de fiche disponible pour ce sujet.</li>`;
+  } else {
+    c.points.forEach(p => {
+      const li = document.createElement("li");
+      li.textContent = p;
+      ul.appendChild(li);
+    });
+  }
+  const atelierBox = document.getElementById("cours-detail-atelier");
+  if (c.atelierId) {
+    atelierBox.classList.remove("hidden");
+    atelierBox.innerHTML = `<button class="btn btn-primary" id="btn-cours-to-atelier">🔧 Pratiquer ce montage dans l'atelier</button>`;
+    document.getElementById("btn-cours-to-atelier").addEventListener("click", () => {
+      openExercise(c.atelierId);
+    });
+  } else {
+    atelierBox.classList.add("hidden");
+    atelierBox.innerHTML = "";
+  }
+  showView("coursDetail");
+}
+
+document.getElementById("btn-cours").addEventListener("click", () => {
+  renderCoursTable(document.getElementById("cours-search").value);
+  showView("cours");
+});
+document.getElementById("btn-back-cours").addEventListener("click", () => {
+  showView("home");
+});
+document.getElementById("btn-back-cours-detail").addEventListener("click", () => {
+  renderCoursTable(document.getElementById("cours-search").value);
+  showView("cours");
+});
+document.getElementById("cours-search").addEventListener("input", (e) => {
+  renderCoursTable(e.target.value);
+});
+
 // ---------- Initialisation ----------
 renderHome();
+COURS_INDEX = buildCoursIndex();
 showView("home");

@@ -32,6 +32,7 @@
       <div class="hero-buttons">
         <button id="btn-defi" class="btn btn-primary btn-large">🎲 Mode Défi (questions mélangées)</button>
         <button id="btn-atelier" class="btn btn-secondary btn-large">🔧 Atelier de câblage</button>
+        <button id="btn-cours" class="btn btn-secondary btn-large">📚 Cours</button>
       </div>
     </div>
 
@@ -55,6 +56,7 @@
     </div>
 
     <h2 id="quiz-topic-name"></h2>
+    <button id="btn-quiz-to-cours" class="btn btn-secondary btn-cours-link hidden">📚 Voir le cours de ce sujet</button>
 
     <div class="question-card">
       <p id="question-text" class="question-text"></p>
@@ -68,9 +70,11 @@
     <div class="result-card">
       <h2 id="result-title"></h2>
       <p id="result-score" class="result-score"></p>
+      <p id="result-best" class="result-best hidden"></p>
       <p id="result-msg" class="result-msg"></p>
       <div class="result-buttons">
         <button id="btn-retry" class="btn btn-primary">🔁 Rejouer ce sujet</button>
+        <button id="btn-result-to-cours" class="btn btn-secondary hidden">📚 Revoir le cours</button>
         <button id="btn-home" class="btn btn-secondary">🏠 Accueil</button>
       </div>
     </div>
@@ -86,6 +90,11 @@
   <section id="view-atelier-workshop" class="view hidden">
     <div class="atelier-toolbar">
       <button class="btn btn-back" id="btn-quit-atelier">← Retour aux exercices</button>
+      <div class="zoom-controls">
+        <button id="btn-zoom-out" title="Zoom arrière">−</button>
+        <button id="btn-zoom-fit" class="zoom-fit" title="Ajuster à l'écran">🔍 Vue d'ensemble</button>
+        <button id="btn-zoom-in" title="Zoom avant">+</button>
+      </div>
       <button class="btn btn-secondary" id="btn-help">❓ Aide</button>
     </div>
     <h2 id="atelier-exo-title"></h2>
@@ -109,6 +118,29 @@
     </div>
 
     <div id="atelier-result" class="atelier-result hidden"></div>
+  </section>
+
+  <section id="view-cours" class="view hidden">
+    <button class="btn btn-back" id="btn-back-cours">← Retour</button>
+    <h2>📚 Cours</h2>
+    <p class="atelier-intro">Fiches de cours par sujet, classées par semaine. Clique sur une ligne pour ouvrir la fiche détaillée. 🔧 = montage disponible dans l'atelier.</p>
+    <input type="text" id="cours-search" class="cours-search" placeholder="🔍 Rechercher un sujet, un thème...">
+    <div class="cours-table-wrap">
+      <table class="cours-table" id="cours-table">
+        <thead>
+          <tr><th>Sem.</th><th>Thème</th><th>Sujet</th><th>Points</th></tr>
+        </thead>
+        <tbody id="cours-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="view-cours-detail" class="view hidden">
+    <button class="btn btn-back" id="btn-back-cours-detail">← Retour aux cours</button>
+    <h2 id="cours-detail-title"></h2>
+    <p id="cours-detail-meta" class="cours-detail-meta"></p>
+    <ul id="cours-detail-points" class="cours-detail-points"></ul>
+    <div id="cours-detail-atelier" class="cours-detail-atelier hidden"></div>
   </section>
 
 </main>

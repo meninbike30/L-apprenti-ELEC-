@@ -6,6 +6,8 @@ let userCalibre = {};       // { compId: valeur }
 let userSection = null;
 let selectedRole = null;
 let dragState = null;       // { fromComp, fromTerm, tempLine }
+let canvasZoom = 1;
+const ZOOM_MIN = 0.3, ZOOM_MAX = 1.5, ZOOM_STEP = 0.15;
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -155,7 +157,28 @@ const COMP_ICONS = {
     <path d="M25 25 q0 -14 10 -14 q4 6 -2 10 Z" fill="#2e8b2e"/>
     <path d="M25 25 q14 0 14 10 q-6 4 -10 -2 Z" fill="#2e8b2e"/>
     <path d="M25 25 q0 14 -10 14 q-4 -6 2 -10 Z" fill="#2e8b2e"/>
-    <circle cx="25" cy="25" r="3" fill="#2e8b2e"/>` }
+    <circle cx="25" cy="25" r="3" fill="#2e8b2e"/>` },
+  differentiel: { vb: "0 0 60 50", w: 42, h: 35, svg: `
+    <rect x="2" y="2" width="56" height="46" rx="4" fill="#fff" stroke="#333" stroke-width="2"/>
+    <line x1="18" y1="10" x2="18" y2="22" stroke="#c0392b" stroke-width="3" stroke-linecap="round" transform="rotate(-18 18 16)"/>
+    <line x1="42" y1="10" x2="42" y2="22" stroke="#2f6fd1" stroke-width="3" stroke-linecap="round" transform="rotate(-18 42 16)"/>
+    <text x="30" y="40" font-size="9" text-anchor="middle" fill="#333" font-weight="700">30mA</text>` },
+  "plaque-cuisson": { vb: "0 0 60 50", w: 40, h: 33, svg: `
+    <rect x="2" y="2" width="56" height="46" rx="4" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
+    <circle cx="18" cy="16" r="8" fill="none" stroke="#e08a1e" stroke-width="1.5"/>
+    <circle cx="42" cy="16" r="6" fill="none" stroke="#e08a1e" stroke-width="1.5"/>
+    <circle cx="18" cy="34" r="6" fill="none" stroke="#e08a1e" stroke-width="1.5"/>
+    <circle cx="42" cy="34" r="8" fill="none" stroke="#e08a1e" stroke-width="1.5"/>` },
+  "interrupteur-horaire": { vb: "0 0 40 40", w: 24, h: 24, svg: `
+    <rect x="3" y="3" width="34" height="34" rx="6" fill="#fff" stroke="#333" stroke-width="2"/>
+    <circle cx="20" cy="20" r="11" fill="#eee" stroke="#333" stroke-width="1.5"/>
+    <line x1="20" y1="20" x2="20" y2="12" stroke="#333" stroke-width="1.5"/>
+    <line x1="20" y1="20" x2="25" y2="23" stroke="#333" stroke-width="1.5"/>` },
+  "module-yokis": { vb: "0 0 50 50", w: 34, h: 34, svg: `
+    <rect x="6" y="10" width="38" height="30" rx="4" fill="#f3e9f8" stroke="#7b3fa0" stroke-width="2"/>
+    <text x="25" y="30" font-size="14" text-anchor="middle" fill="#7b3fa0" font-weight="700">Y</text>
+    <path d="M36 8 q4 -4 8 0" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>
+    <path d="M38 5 q6 -6 12 0" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>` }
 };
 
 function compIcon(type) {
@@ -244,6 +267,7 @@ function openExercise(exoId) {
 
   renderRolePalette();
   renderCanvas();
+  fitZoom();
   showView("atelierWork");
 }
 
@@ -272,6 +296,9 @@ function renderRolePalette() {
 function renderCanvas() {
   const wrap = document.getElementById("atelier-canvas-wrap");
   wrap.innerHTML = "";
+
+  const sizer = document.createElement("div");
+  sizer.id = "canvas-sizer";
 
   const canvas = document.createElement("div");
   canvas.id = "atelier-canvas";
@@ -354,7 +381,8 @@ function renderCanvas() {
     });
   });
 
-  wrap.appendChild(canvas);
+  sizer.appendChild(canvas);
+  wrap.appendChild(sizer);
 
   // Sélecteur de section globale
   const sectionBox = document.getElementById("section-select-wrap");
@@ -368,14 +396,42 @@ function renderCanvas() {
     sectionBox.appendChild(sel);
   }
 
+  applyZoom();
   redrawWires();
 }
+
+// ---------- Zoom / vue d'ensemble ----------
+function applyZoom() {
+  const canvas = document.getElementById("atelier-canvas");
+  const sizer = document.getElementById("canvas-sizer");
+  if (!canvas || !sizer || !currentExo) return;
+  canvas.style.transform = `scale(${canvasZoom})`;
+  sizer.style.width = (currentExo.canvasW * canvasZoom) + "px";
+  sizer.style.height = (currentExo.canvasH * canvasZoom) + "px";
+}
+
+function setZoom(z) {
+  canvasZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z));
+  applyZoom();
+}
+
+function fitZoom() {
+  const wrap = document.getElementById("atelier-canvas-wrap");
+  if (!wrap || !currentExo) return;
+  const availW = wrap.clientWidth - 20;
+  const z = Math.min(1, availW / currentExo.canvasW);
+  setZoom(Math.max(ZOOM_MIN, z));
+}
+
+document.getElementById("btn-zoom-in").addEventListener("click", () => setZoom(canvasZoom + ZOOM_STEP));
+document.getElementById("btn-zoom-out").addEventListener("click", () => setZoom(canvasZoom - ZOOM_STEP));
+document.getElementById("btn-zoom-fit").addEventListener("click", fitZoom);
 
 // ---------- Position d'une borne dans le canvas ----------
 function pointerCanvasPos(evt) {
   const canvas = document.getElementById("atelier-canvas");
   const rect = canvas.getBoundingClientRect();
-  return { x: evt.clientX - rect.left, y: evt.clientY - rect.top };
+  return { x: (evt.clientX - rect.left) / canvasZoom, y: (evt.clientY - rect.top) / canvasZoom };
 }
 
 // ---------- Tirage d'un câble ----------

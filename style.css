@@ -153,6 +153,22 @@ body {
 }
 .topic-card h4 { margin: 0 0 6px; font-size: 1rem; }
 .topic-card span { font-size: 0.8rem; color: var(--muted); }
+.topic-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+}
+.topic-score-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #f4f8f1;
+  color: var(--green-dark);
+}
+.topic-score-badge.low { background: #fdf1ee; color: #c85a3a; }
+.topic-read-badge { font-size: 0.85rem; }
 
 .topics-empty {
   grid-column: 1 / -1;
@@ -282,6 +298,77 @@ body {
   margin-top: 16px;
 }
 
+/* ---------- Cours ---------- */
+.cours-search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  margin: 10px 0 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+}
+.cours-search:focus { outline: none; border-color: var(--green); }
+.cours-table-wrap {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  overflow-x: auto;
+}
+.cours-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.cours-table th, .cours-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+}
+.cours-table th:nth-child(2), .cours-table td:nth-child(2),
+.cours-table th:nth-child(3), .cours-table td:nth-child(3) {
+  white-space: normal;
+}
+.cours-table th {
+  background: #f4f8f1;
+  color: var(--green-dark);
+  position: sticky;
+  top: 0;
+}
+.cours-table tbody tr { cursor: pointer; }
+.cours-table tbody tr:hover { background: #f7faf5; }
+.cours-table td:last-child, .cours-table th:last-child { text-align: center; }
+.cours-table tr.cours-read { background: #f7faf5; }
+.cours-table tr.cours-read td:first-child { border-left: 3px solid var(--green); }
+.cours-score-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 20px;
+  background: #f4f8f1;
+  color: var(--green-dark);
+  margin-left: 6px;
+  white-space: nowrap;
+}
+.cours-detail-meta { color: var(--muted); margin-top: -6px; }
+.cours-detail-points {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 16px 16px 16px 34px;
+  margin: 16px 0;
+}
+.cours-detail-points li { margin-bottom: 10px; line-height: 1.4; }
+.cours-detail-points li:last-child { margin-bottom: 0; }
+.cours-detail-atelier { margin-top: 6px; }
+.btn-cours-link { margin: -6px 0 14px; }
+.result-best {
+  font-weight: 700;
+  color: var(--green-dark);
+  margin-top: -8px;
+}
+
 /* ---------- Atelier: liste d'exercices ---------- */
 .atelier-intro { color: var(--muted); }
 .exo-list {
@@ -315,8 +402,28 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
   margin-bottom: 6px;
 }
+.zoom-controls {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.zoom-controls button {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 2px solid var(--green-dark);
+  background: white;
+  color: var(--green-dark);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.zoom-controls button:active { background: var(--green); color: white; }
+.zoom-controls .zoom-fit { width: auto; padding: 0 10px; font-size: 0.85rem; }
 .atelier-hint-static {
   color: var(--muted);
   font-size: 0.85rem;
@@ -414,14 +521,21 @@ body {
 }
 
 .atelier-canvas-wrap {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 62vh;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y pinch-zoom;
   background: var(--card);
   border-radius: var(--radius);
   box-shadow: 0 2px 10px rgba(0,0,0,0.06);
   padding: 10px;
 }
+#canvas-sizer {
+  position: relative;
+}
 #atelier-canvas, #help-canvas {
   position: relative;
+  transform-origin: top left;
 }
 #wires-svg {
   position: absolute;
@@ -429,7 +543,7 @@ body {
   z-index: 2;
   pointer-events: none;
 }
-#atelier-canvas, .terminal-dot {
+.terminal-dot {
   touch-action: none;
   user-select: none;
 }

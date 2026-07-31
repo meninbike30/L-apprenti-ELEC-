@@ -465,5 +465,145 @@ const ATELIER_EXERCISES = [
       { from: "disj.out", to: "bp.in", role: "phase" },
       { from: "bp.out", to: "vmc.gv", role: "commande" }
     ]
+  },
+  {
+    id: "tableau-differentiel",
+    nom: "Montage Tableau électrique (interrupteur différentiel)",
+    difficulte: "Difficile",
+    description: "Câbler un interrupteur différentiel 30mA en tête de tableau, puis répartir vers un circuit éclairage et un circuit prises.",
+    canvasW: 1000, canvasH: 300,
+    successTarget: "diff",
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur de branchement", x: 20, y: 20, w: 130, h: 54,
+        calibreOptions: [15, 30, 45, 60], calibreCorrect: 30,
+        info: "L'AGCP (disjoncteur de branchement) protège l'ensemble de l'installation et coupe l'arrivée générale. Son calibre dépend de la puissance souscrite.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 130, h: 54,
+        info: "Le neutre général arrive directement sur le peigne de neutre, avant l'interrupteur différentiel.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 137, network: true }, { id: "out", label: "N", x: 150, y: 137 }] },
+      { id: "bt", type: "bornier-terre", family: "source", label: "Bornier Terre", x: 20, y: 200, w: 130, h: 54,
+        info: "Le conducteur de terre relie directement la prise de terre du bâtiment aux masses des appareils : il ne passe jamais par l'interrupteur différentiel.",
+        terminals: [{ id: "in", label: "Réseau T", x: 20, y: 227, network: true }, { id: "out", label: "T", x: 150, y: 227 }] },
+      { id: "diff", type: "differentiel", family: "source", label: "Inter. différentiel 30mA", x: 300, y: 60, w: 150, h: 100,
+        info: "Obligatoire en tête de chaque groupe de circuits, l'interrupteur différentiel 30mA protège les personnes contre l'électrisation en coupant phase ET neutre en cas de fuite de courant. Il ne protège pas les circuits eux-mêmes : c'est le rôle des disjoncteurs divisionnaires en aval.",
+        terminals: [{ id: "in_ph", label: "Ph entrée", x: 300, y: 90 }, { id: "in_n", label: "N entrée", x: 300, y: 130 }, { id: "out_ph", label: "Ph sortie", x: 450, y: 90 }, { id: "out_n", label: "N sortie", x: 450, y: 130 }] },
+      { id: "disjE", type: "disjoncteur", family: "source", label: "Disjoncteur éclairage", x: 560, y: 20, w: 130, h: 54,
+        calibreOptions: [10, 16], calibreCorrect: 10,
+        info: "Chaque circuit possède son propre disjoncteur divisionnaire, calibré selon la section de son câble (ici 10 A pour un circuit éclairage 1,5 mm²).",
+        terminals: [{ id: "in", label: "Entrée", x: 560, y: 47 }, { id: "out", label: "Sortie", x: 690, y: 47 }] },
+      { id: "disjP", type: "disjoncteur", family: "source", label: "Disjoncteur prises", x: 560, y: 160, w: 130, h: 54,
+        calibreOptions: [16, 20, 32], calibreCorrect: 16,
+        info: "Le circuit de prises est protégé par un disjoncteur 16 A (câble 1,5 mm²) ou 20 A (câble 2,5 mm²).",
+        terminals: [{ id: "in", label: "Entrée", x: 560, y: 187 }, { id: "out", label: "Sortie", x: 690, y: 187 }] },
+      { id: "lampe", type: "lampe", family: "receiver", label: "Circuit éclairage", x: 830, y: 10, w: 120, h: 80,
+        terminals: [{ id: "ph", label: "Ph", x: 830, y: 30 }, { id: "n", label: "N", x: 830, y: 68 }] },
+      { id: "prise", type: "prise", family: "receiver", label: "Circuit prises", x: 830, y: 150, w: 130, h: 130,
+        terminals: [{ id: "ph", label: "Ph", x: 830, y: 180 }, { id: "n", label: "N", x: 830, y: 215 }, { id: "terre", label: "T", x: 830, y: 250 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "diff.in_ph", role: "phase" },
+      { from: "bn.out", to: "diff.in_n", role: "neutre" },
+      { from: "diff.out_ph", to: "disjE.in", role: "phase" },
+      { from: "diff.out_ph", to: "disjP.in", role: "phase" },
+      { from: "diff.out_n", to: "lampe.n", role: "neutre" },
+      { from: "diff.out_n", to: "prise.n", role: "neutre" },
+      { from: "disjE.out", to: "lampe.ph", role: "phase" },
+      { from: "disjP.out", to: "prise.ph", role: "phase" },
+      { from: "bt.out", to: "prise.terre", role: "terre" }
+    ]
+  },
+  {
+    id: "plaque-cuisson",
+    nom: "Montage Plaque de cuisson",
+    difficulte: "Moyen",
+    description: "Raccorder une plaque de cuisson sur son circuit dédié à forte puissance (32 A / 6 mm²).",
+    canvasW: 820, canvasH: 260,
+    successTarget: "plaque",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 6,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 30, y: 20, w: 120, h: 54,
+        calibreOptions: [16, 20, 32], calibreCorrect: 32,
+        info: "Une plaque de cuisson (induction ou vitrocéramique) est un gros consommateur : circuit dédié protégé par un disjoncteur 32 A avec un câble de 6 mm².",
+        terminals: [{ id: "in", label: "Réseau", x: 30, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 30, y: 110, w: 120, h: 54,
+        info: "Le neutre n'est pas protégé individuellement : il est distribué à tous les circuits via un bornier commun.",
+        terminals: [{ id: "in", label: "Réseau N", x: 30, y: 137, network: true }, { id: "out", label: "N", x: 150, y: 137 }] },
+      { id: "bt", type: "bornier-terre", family: "source", label: "Bornier Terre", x: 30, y: 190, w: 120, h: 54,
+        info: "Le conducteur de terre relie les masses métalliques des appareils à la prise de terre du bâtiment.",
+        terminals: [{ id: "in", label: "Réseau T", x: 30, y: 217, network: true }, { id: "out", label: "T", x: 150, y: 217 }] },
+      { id: "plaque", type: "plaque-cuisson", family: "receiver", label: "Plaque de cuisson", x: 480, y: 70, w: 140, h: 130,
+        info: "La plaque de cuisson doit être sur un circuit dédié, sans aucune autre prise raccordée dessus, avec sa propre protection et sa propre terre.",
+        terminals: [{ id: "ph", label: "Ph", x: 480, y: 100 }, { id: "n", label: "N", x: 480, y: 135 }, { id: "terre", label: "T", x: 480, y: 170 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "plaque.ph", role: "phase" },
+      { from: "bn.out", to: "plaque.n", role: "neutre" },
+      { from: "bt.out", to: "plaque.terre", role: "terre" }
+    ]
+  },
+  {
+    id: "interrupteur-horaire",
+    nom: "Montage Interrupteur horaire",
+    difficulte: "Facile",
+    description: "Programmer l'allumage automatique d'un éclairage extérieur à heures fixes.",
+    canvasW: 820, canvasH: 260,
+    successTarget: "lampe",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 1.5,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 30, y: 30, w: 120, h: 54,
+        calibreOptions: [10, 16, 20, 32], calibreCorrect: 10,
+        info: "Un disjoncteur divisionnaire unipolaire protège et coupe uniquement la phase. Son calibre doit être adapté à la section du câble (1,5 mm² → 10 A max).",
+        terminals: [{ id: "in", label: "Réseau", x: 30, y: 57, network: true }, { id: "out", label: "Sortie", x: 150, y: 57 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 30, y: 160, w: 120, h: 54,
+        info: "Le neutre n'est pas protégé individuellement : il est distribué à tous les circuits via un bornier commun.",
+        terminals: [{ id: "in", label: "Réseau N", x: 30, y: 187, network: true }, { id: "out", label: "N", x: 150, y: 187 }] },
+      { id: "horaire", type: "interrupteur-horaire", family: "switch", label: "Interrupteur horaire", x: 330, y: 30, w: 120, h: 54,
+        info: "Un interrupteur horaire (minuterie programmable) coupe et remet le circuit sous tension automatiquement aux heures programmées, sans intervention humaine. Très utilisé pour l'éclairage extérieur, les enseignes ou le chauffe-eau. Câblage identique à un simple interrupteur : Commun reçoit la phase, L1 repart vers le récepteur.",
+        terminals: [{ id: "commun", label: "Commun", x: 330, y: 57 }, { id: "l1", label: "L1", x: 450, y: 57 }] },
+      { id: "lampe", type: "lampe", family: "receiver", label: "Éclairage extérieur", x: 630, y: 110, w: 120, h: 80,
+        terminals: [{ id: "ph", label: "Ph", x: 630, y: 130 }, { id: "n", label: "N", x: 630, y: 168 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "horaire.commun", role: "phase" },
+      { from: "horaire.l1", to: "lampe.ph", role: "retour" },
+      { from: "bn.out", to: "lampe.n", role: "neutre" }
+    ]
+  },
+  {
+    id: "module-yokis",
+    nom: "Montage Module radio/filaire type Yokis",
+    difficulte: "Moyen",
+    description: "Installer un micro-module de commande (type Yokis) pour piloter un éclairage depuis un simple poussoir, sans circuit de commande séparé.",
+    canvasW: 900, canvasH: 320,
+    successTarget: "lampe",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 1.5,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 20, y: 20, w: 120, h: 54,
+        calibreOptions: [10, 16, 20], calibreCorrect: 10,
+        info: "Un disjoncteur divisionnaire unipolaire protège et coupe uniquement la phase. Calibre adapté à la section du câble (1,5 mm² → 10 A max).",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 130, w: 120, h: 70,
+        info: "Le neutre alimente à la fois le module ET la lampe via un bornier commun.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 165, network: true }, { id: "out1", label: "N1", x: 150, y: 148 }, { id: "out2", label: "N2", x: 150, y: 182 }] },
+      { id: "module", type: "module-yokis", family: "relay", label: "Module Yokis", x: 300, y: 40, w: 150, h: 150,
+        info: "Contrairement au télérupteur, ce micro-module (radio ou filaire) se loge directement dans le boîtier d'encastrement ou le plafonnier et n'a pas besoin d'un circuit de commande séparé protégé par son propre disjoncteur : un simple poussoir suffit, câblé en basse consommation. Idéal en rénovation pour ajouter une commande sans tirer de nouveaux câbles de puissance.",
+        terminals: [{ id: "l", label: "L", x: 300, y: 70 }, { id: "n", label: "N", x: 300, y: 110 }, { id: "sortie", label: "Sortie", x: 450, y: 70 }, { id: "p1", label: "P1", x: 450, y: 110 }, { id: "p2", label: "P2", x: 450, y: 150 }] },
+      { id: "poussoir", type: "bouton-poussoir", family: "switch", label: "Poussoir simple", x: 300, y: 240, w: 110, h: 54,
+        info: "Le poussoir se raccorde en boucle simple sur le module (P1/P2), sans disjoncteur dédié : le module fournit lui-même son circuit de commande basse consommation.",
+        terminals: [{ id: "in", label: "E", x: 300, y: 267 }, { id: "out", label: "S", x: 410, y: 267 }] },
+      { id: "lampe", type: "lampe", family: "receiver", label: "Point lumineux", x: 650, y: 20, w: 120, h: 80,
+        terminals: [{ id: "ph", label: "Ph", x: 650, y: 40 }, { id: "n", label: "N", x: 650, y: 78 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "module.l", role: "phase" },
+      { from: "bn.out1", to: "module.n", role: "neutre" },
+      { from: "bn.out2", to: "lampe.n", role: "neutre" },
+      { from: "module.sortie", to: "lampe.ph", role: "retour" },
+      { from: "module.p1", to: "poussoir.in", role: "commande" },
+      { from: "poussoir.out", to: "module.p2", role: "commande" }
+    ]
   }
 ];
