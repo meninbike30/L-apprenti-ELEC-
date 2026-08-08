@@ -1,10 +1,11 @@
-const CACHE_NAME = "eeb-quiz-v2.5";
+const CACHE_NAME = "eeb-quiz-v2.6";
 const ASSETS = [
   "./",
   "./index.html",
   "./style.css",
   "./questions.js",
   "./atelier-data.js",
+  "./cours-data.js",
   "./script.js",
   "./atelier.js",
   "./manifest.json",

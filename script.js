@@ -3,7 +3,7 @@
 // Numéro de version affiché en haut de l'appli : à incrémenter à chaque
 // mise à jour poussée sur GitHub, pour que les utilisateurs puissent
 // vérifier facilement s'ils ont bien la dernière version.
-const APP_VERSION = "2.5";
+const APP_VERSION = "2.6";
 const versionBadge = document.getElementById("app-version");
 if (versionBadge) versionBadge.textContent = "v" + APP_VERSION;
 
@@ -357,12 +357,18 @@ function buildCoursIndex() {
   const list = [];
   QUIZ_DATA.forEach(sem => {
     sem.topics.forEach(topic => {
-      const seen = new Set();
-      const points = [];
-      topic.questions.forEach(q => {
-        const txt = (q.exp || "").trim();
-        if (txt && !seen.has(txt)) { seen.add(txt); points.push(txt); }
-      });
+      // Fiche de cours complète si disponible (cours-data.js), sinon on
+      // retombe sur les explications du quiz pour ne jamais afficher une
+      // fiche vide.
+      let points = (typeof COURS_CONTENT !== "undefined" && COURS_CONTENT[topic.nom]) || null;
+      if (!points) {
+        const seen = new Set();
+        points = [];
+        topic.questions.forEach(q => {
+          const txt = (q.exp || "").trim();
+          if (txt && !seen.has(txt)) { seen.add(txt); points.push(txt); }
+        });
+      }
       list.push({
         semaine: sem.semaine,
         periode: sem.periode,
