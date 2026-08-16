@@ -74,11 +74,23 @@ const COMP_ICONS = {
   "bouton-poussoir": { vb: "0 0 40 40", w: 22, h: 22, svg: `
     <rect x="3" y="3" width="34" height="34" rx="6" fill="#fff" stroke="#333" stroke-width="2"/>
     <circle cx="20" cy="20" r="10" fill="#d1493f" stroke="#333" stroke-width="1.5"/>` },
-  telerupteur: { vb: "0 0 60 50", w: 46, h: 38, svg: `
-    <rect x="2" y="2" width="56" height="46" rx="4" fill="#f3e9f8" stroke="#7b3fa0" stroke-width="2"/>
-    <circle cx="18" cy="25" r="9" fill="none" stroke="#7b3fa0" stroke-width="2"/>
-    <text x="18" y="29" font-size="9" text-anchor="middle" fill="#7b3fa0" font-weight="700">A</text>
-    <rect x="36" y="15" width="16" height="20" fill="none" stroke="#333" stroke-width="2"/>` },
+  telerupteur: { vb: "0 0 80 66", w: 52, h: 43, svg: `
+    <rect x="16" y="0" width="10" height="5" fill="#8a8a8a"/>
+    <rect x="54" y="0" width="10" height="5" fill="#8a8a8a"/>
+    <rect x="4" y="4" width="72" height="58" rx="4" fill="#fbf7fd" stroke="#7b3fa0" stroke-width="2"/>
+    <circle cx="16" cy="14" r="3" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>
+    <circle cx="16" cy="52" r="3" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>
+    <circle cx="64" cy="14" r="3" fill="none" stroke="#333" stroke-width="1.5"/>
+    <circle cx="64" cy="52" r="3" fill="none" stroke="#333" stroke-width="1.5"/>
+    <text x="16" y="25" font-size="7" text-anchor="middle" fill="#7b3fa0" font-weight="700">A1</text>
+    <text x="16" y="47" font-size="7" text-anchor="middle" fill="#7b3fa0" font-weight="700">A2</text>
+    <text x="64" y="25" font-size="7" text-anchor="middle" fill="#333" font-weight="700">1</text>
+    <text x="64" y="47" font-size="7" text-anchor="middle" fill="#333" font-weight="700">2</text>
+    <circle cx="34" cy="33" r="8" fill="none" stroke="#7b3fa0" stroke-width="2"/>
+    <path d="M29 33 q2.5 -5 5 0 q2.5 5 5 0" fill="none" stroke="#7b3fa0" stroke-width="1.2"/>
+    <line x1="52" y1="25" x2="60" y2="35" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="52" cy="25" r="1.8" fill="#333"/>
+    <circle cx="60" cy="41" r="1.8" fill="#333"/>` },
   contacteur: { vb: "0 0 60 50", w: 46, h: 38, svg: `
     <rect x="2" y="2" width="56" height="46" rx="4" fill="#f3e9f8" stroke="#7b3fa0" stroke-width="2"/>
     <circle cx="18" cy="25" r="9" fill="none" stroke="#7b3fa0" stroke-width="2"/>

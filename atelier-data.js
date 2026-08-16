@@ -113,8 +113,8 @@ const ATELIER_EXERCISES = [
       { id: "bp2", type: "bouton-poussoir", family: "switch", label: "Bouton poussoir 2", x: 290, y: 220, w: 110, h: 54,
         info: "Les boutons poussoirs sont câblés en parallèle (pas en série) : n'importe lequel peut déclencher le télérupteur.",
         terminals: [{ id: "in", label: "E", x: 290, y: 247 }, { id: "out", label: "S", x: 400, y: 247 }] },
-      { id: "tele", type: "telerupteur", family: "relay", label: "Télérupteur", x: 540, y: 90, w: 150, h: 130,
-        info: "A1/A2 = bobine de commande (basse consommation, pilotée par les boutons poussoirs). 1/2 = contact de puissance qui alimente réellement la lampe.",
+      { id: "tele", type: "telerupteur", family: "relay", label: "Télérupteur (module tableau)", x: 540, y: 90, w: 150, h: 130,
+        info: "Comme un disjoncteur, le télérupteur est un module qui se clipse sur le rail DIN du tableau électrique. Ses bornes sont numérotées comme sur un vrai produit : A1/A2 = bobine de commande (basse consommation, pilotée par les boutons poussoirs), 1/2 = contact de puissance qui alimente réellement la lampe.",
         terminals: [{ id: "a1", label: "A1", x: 540, y: 120 }, { id: "a2", label: "A2", x: 540, y: 190 }, { id: "one", label: "1", x: 690, y: 120 }, { id: "two", label: "2", x: 690, y: 190 }] },
       { id: "lampe", type: "lampe", family: "receiver", label: "Point lumineux", x: 790, y: 20, w: 120, h: 80,
         terminals: [{ id: "ph", label: "Ph", x: 790, y: 40 }, { id: "n", label: "N", x: 790, y: 78 }] }
