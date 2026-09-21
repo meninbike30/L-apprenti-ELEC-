@@ -160,7 +160,7 @@ const ATELIER_EXERCISES = [
     id: "contacteur-hchp",
     nom: "Montage Contacteur HC / HP",
     difficulte: "Moyen",
-    description: "Piloter un chauffe-eau électrique via un contacteur jour/nuit.",
+    description: "Piloter un chauffe-eau électrique via un contacteur jour/nuit, avec son propre circuit de commande protégé (bornes C1/C2 du compteur Linky, disjoncteur 2A dédié).",
     canvasW: 940, canvasH: 260,
     successTarget: "chauffeeau",
     sectionOptions: [1.5, 2.5, 6],
@@ -168,16 +168,20 @@ const ATELIER_EXERCISES = [
     components: [
       { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur puissance", x: 20, y: 20, w: 130, h: 54,
         calibreOptions: [16, 20, 32], calibreCorrect: 20,
-        info: "Protège le circuit de puissance du chauffe-eau, indépendamment du signal de commande jour/nuit.",
+        info: "Protège le circuit de puissance du chauffe-eau (2,5 mm²), indépendamment du circuit de commande.",
         terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
       { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 140, w: 130, h: 70,
         info: "Le neutre n'est pas protégé individuellement : il est distribué au chauffe-eau ET à la bobine du contacteur via un bornier commun.",
         terminals: [{ id: "in", label: "Réseau N", x: 20, y: 175, network: true }, { id: "out1", label: "N1", x: 150, y: 158 }, { id: "out2", label: "N2", x: 150, y: 192 }] },
-      { id: "signal", type: "compteur", family: "source", label: "Signal EDF (compteur)", x: 300, y: 20, w: 150, h: 54,
-        info: "Le compteur envoie un signal tarifaire (heures creuses/pleines) qui pilote la bobine A1/A2 du contacteur, indépendamment du circuit de puissance.",
-        terminals: [{ id: "in", label: "Compteur", x: 300, y: 47, network: true }, { id: "out", label: "Signal", x: 450, y: 47 }] },
+      { id: "disjcmd", type: "disjoncteur", family: "source", label: "Disjoncteur commande", x: 300, y: 20, w: 150, h: 54,
+        calibreOptions: [2, 10, 16], calibreCorrect: 2,
+        info: "La norme NF C 15-100 impose un disjoncteur dédié (2A / 1,5 mm²) pour protéger le circuit de commande de la bobine, séparément du circuit de puissance.",
+        terminals: [{ id: "in", label: "Réseau", x: 300, y: 47, network: true }, { id: "out", label: "Sortie", x: 450, y: 47 }] },
+      { id: "signal", type: "compteur", family: "source", label: "Compteur Linky", x: 300, y: 140, w: 150, h: 54,
+        info: "Le compteur Linky pilote un contact sec sur ses bornes C1/C2 : C1 reçoit la phase (via le disjoncteur 2A), C2 délivre le signal vers la bobine A1 du contacteur pendant les heures creuses.",
+        terminals: [{ id: "c1", label: "C1", x: 300, y: 167 }, { id: "c2", label: "C2", x: 450, y: 167 }] },
       { id: "contacteur", type: "contacteur", family: "relay", label: "Contacteur jour/nuit", x: 560, y: 70, w: 150, h: 130,
-        info: "A1/A2 = bobine pilotée par le signal tarifaire du compteur. 1/2 = contact de puissance qui alimente réellement le chauffe-eau.",
+        info: "A1/A2 = bobine pilotée par le contact C1/C2 du Linky (via le disjoncteur 2A dédié). 1/2 = contact de puissance unipolaire qui alimente réellement le chauffe-eau (le neutre, lui, passe directement par le bornier).",
         terminals: [{ id: "a1", label: "A1", x: 560, y: 100 }, { id: "a2", label: "A2", x: 560, y: 160 }, { id: "one", label: "1", x: 710, y: 100 }, { id: "two", label: "2", x: 710, y: 160 }] },
       { id: "chauffeeau", type: "chauffe-eau", family: "receiver", label: "Chauffe-eau", x: 790, y: 20, w: 120, h: 80,
         terminals: [{ id: "ph", label: "Ph", x: 790, y: 40 }, { id: "n", label: "N", x: 790, y: 78 }] }
@@ -187,7 +191,8 @@ const ATELIER_EXERCISES = [
       { from: "contacteur.two", to: "chauffeeau.ph", role: "retour" },
       { from: "bn.out1", to: "chauffeeau.n", role: "neutre" },
       { from: "bn.out2", to: "contacteur.a2", role: "neutre" },
-      { from: "signal.out", to: "contacteur.a1", role: "signal" }
+      { from: "disjcmd.out", to: "signal.c1", role: "phase" },
+      { from: "signal.c2", to: "contacteur.a1", role: "signal" }
     ]
   },
   {
