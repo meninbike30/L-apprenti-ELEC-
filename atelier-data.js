@@ -96,17 +96,13 @@ const ATELIER_EXERCISES = [
     sectionOptions: [1.5, 2.5, 6],
     sectionCorrect: 1.5,
     components: [
-      { id: "disjP", type: "disjoncteur", family: "source", label: "Disjoncteur puissance", x: 20, y: 20, w: 130, h: 54,
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 20, y: 20, w: 130, h: 54,
         calibreOptions: [10, 16, 20, 32], calibreCorrect: 10,
-        info: "Protège le circuit de puissance qui alimente réellement la lampe (via le contact 1-2 du télérupteur).",
-        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie P", x: 150, y: 47 }] },
-      { id: "disjC", type: "disjoncteur", family: "source", label: "Disjoncteur commande", x: 20, y: 110, w: 130, h: 54,
-        calibreOptions: [2, 6, 10], calibreCorrect: 2,
-        info: "Circuit de commande séparé du circuit de puissance : un petit calibre (souvent 2 A) suffit car seul un faible courant traverse les boutons poussoirs et la bobine.",
-        terminals: [{ id: "in", label: "Réseau", x: 20, y: 137, network: true }, { id: "out", label: "Sortie Cde", x: 150, y: 137 }] },
-      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 220, w: 130, h: 70,
+        info: "Comme pour un simple allumage, un seul disjoncteur (10 A / 1,5 mm²) protège tout le circuit : il alimente à la fois le contact de puissance 1-2 (vers la lampe) ET, via une boîte de dérivation, les boutons poussoirs qui pilotent la bobine A1/A2. Le faible courant de la bobine ne justifie pas une protection séparée.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 130, h: 70,
         info: "Le neutre n'est pas protégé individuellement : il est distribué à tous les circuits (lampe ET bobine A2) via un bornier commun.",
-        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 255, network: true }, { id: "out1", label: "N1", x: 150, y: 238 }, { id: "out2", label: "N2", x: 150, y: 272 }] },
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 145, network: true }, { id: "out1", label: "N1", x: 150, y: 128 }, { id: "out2", label: "N2", x: 150, y: 162 }] },
       { id: "bp1", type: "bouton-poussoir", family: "switch", label: "Bouton poussoir 1", x: 290, y: 110, w: 110, h: 54,
         info: "Les boutons poussoirs sont câblés en parallèle (pas en série) : n'importe lequel peut déclencher le télérupteur.",
         terminals: [{ id: "in", label: "E", x: 290, y: 137 }, { id: "out", label: "S", x: 400, y: 137 }] },
@@ -120,12 +116,12 @@ const ATELIER_EXERCISES = [
         terminals: [{ id: "ph", label: "Ph", x: 790, y: 40 }, { id: "n", label: "N", x: 790, y: 78 }] }
     ],
     connections: [
-      { from: "disjP.out", to: "tele.one", role: "phase" },
+      { from: "disj.out", to: "tele.one", role: "phase" },
       { from: "tele.two", to: "lampe.ph", role: "retour" },
       { from: "bn.out1", to: "lampe.n", role: "neutre" },
       { from: "bn.out2", to: "tele.a2", role: "neutre" },
-      { from: "disjC.out", to: "bp1.in", role: "commande" },
-      { from: "disjC.out", to: "bp2.in", role: "commande" },
+      { from: "disj.out", to: "bp1.in", role: "commande" },
+      { from: "disj.out", to: "bp2.in", role: "commande" },
       { from: "bp1.out", to: "tele.a1", role: "commande" },
       { from: "bp2.out", to: "tele.a1", role: "commande" }
     ]

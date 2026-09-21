@@ -53,16 +53,29 @@ function elbowPath(x1, y1, x2, y2) {
 // ---------- Icônes réalistes des composants ----------
 const COMP_ICONS = {
   disjoncteur: { vb: "0 0 40 50", w: 24, h: 30, svg: `
-    <rect x="2" y="2" width="36" height="46" rx="4" fill="#fff" stroke="#333" stroke-width="2"/>
-    <rect x="13" y="9" width="14" height="20" rx="2" fill="#eee" stroke="#333" stroke-width="1.5"/>
-    <line x1="20" y1="12" x2="20" y2="24" stroke="#c0392b" stroke-width="4" stroke-linecap="round" transform="rotate(-18 20 18)"/>
-    <text x="20" y="42" font-size="9" text-anchor="middle" fill="#333" font-weight="700">A</text>` },
-  bornier: { vb: "0 0 70 30", w: 48, h: 20, svg: `
-    <rect x="2" y="6" width="66" height="18" rx="2" fill="#f0ede0" stroke="#333" stroke-width="1.5"/>
-    ${[10, 26, 42, 58].map(x => `<circle cx="${x}" cy="15" r="4" fill="#bbb" stroke="#333" stroke-width="1"/>`).join("")}` },
-  "bornier-terre": { vb: "0 0 70 30", w: 48, h: 20, svg: `
-    <rect x="2" y="6" width="66" height="18" rx="2" fill="#e7f3e2" stroke="#2e8b2e" stroke-width="1.5"/>
-    ${[10, 26, 42, 58].map(x => `<circle cx="${x}" cy="15" r="4" fill="#8fc27a" stroke="#2e8b2e" stroke-width="1"/>`).join("")}` },
+    <rect x="16" y="0" width="8" height="4" fill="#9aa0a0"/>
+    <rect x="16" y="46" width="8" height="4" fill="#9aa0a0"/>
+    <rect x="4" y="4" width="32" height="42" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <rect x="12" y="7" width="16" height="9" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
+    <line x1="13" y1="15" x2="27" y2="8" stroke="#54504a" stroke-width="0.6"/>
+    <circle cx="20" cy="11.5" r="1.3" fill="#8a8a8a"/>
+    <rect x="13" y="19" width="14" height="18" rx="2" fill="#f4f4f2" stroke="#333" stroke-width="1.3"/>
+    <line x1="20" y1="22" x2="20" y2="33" stroke="#c0392b" stroke-width="3.5" stroke-linecap="round" transform="rotate(-16 20 27)"/>
+    <rect x="12" y="39" width="16" height="9" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
+    <line x1="13" y1="40" x2="27" y2="47" stroke="#54504a" stroke-width="0.6"/>
+    <circle cx="20" cy="43.5" r="1.3" fill="#8a8a8a"/>` },
+  bornier: { vb: "0 0 92 34", w: 60, h: 22, svg: `
+    <rect x="2" y="2" width="88" height="30" rx="6" fill="#efece0" stroke="#8a7f5c" stroke-width="2" stroke-dasharray="5,3"/>
+    ${[16, 38, 60, 78].map(x => `
+      <rect x="${x - 7}" y="8" width="14" height="18" rx="2.5" fill="#fbfbf8" stroke="#555" stroke-width="1.3"/>
+      <path d="M${x - 6} 8 L${x - 6} 0 L${x + 6} 3.5 L${x + 6} 8 Z" fill="#e8862c" stroke="#a85a12" stroke-width="0.8"/>
+      <circle cx="${x}" cy="17" r="2" fill="#999"/>`).join("")}` },
+  "bornier-terre": { vb: "0 0 92 34", w: 60, h: 22, svg: `
+    <rect x="2" y="2" width="88" height="30" rx="6" fill="#e7f3e2" stroke="#2e8b2e" stroke-width="2" stroke-dasharray="5,3"/>
+    ${[16, 38, 60, 78].map(x => `
+      <rect x="${x - 7}" y="8" width="14" height="18" rx="2.5" fill="#fbfbf8" stroke="#2e8b2e" stroke-width="1.3"/>
+      <path d="M${x - 6} 8 L${x - 6} 0 L${x + 6} 3.5 L${x + 6} 8 Z" fill="#e8862c" stroke="#a85a12" stroke-width="0.8"/>
+      <circle cx="${x}" cy="17" r="2" fill="#7bb168"/>`).join("")}` },
   interrupteur: { vb: "0 0 40 40", w: 24, h: 24, svg: `
     <rect x="3" y="3" width="34" height="34" rx="6" fill="#fff" stroke="#333" stroke-width="2"/>
     <rect x="14" y="11" width="12" height="18" rx="3" fill="#e6e6e6" stroke="#333" stroke-width="1.5"/>` },
@@ -75,27 +88,34 @@ const COMP_ICONS = {
     <rect x="3" y="3" width="34" height="34" rx="6" fill="#fff" stroke="#333" stroke-width="2"/>
     <circle cx="20" cy="20" r="10" fill="#d1493f" stroke="#333" stroke-width="1.5"/>` },
   telerupteur: { vb: "0 0 80 66", w: 52, h: 43, svg: `
-    <rect x="16" y="0" width="10" height="5" fill="#8a8a8a"/>
-    <rect x="54" y="0" width="10" height="5" fill="#8a8a8a"/>
-    <rect x="4" y="4" width="72" height="58" rx="4" fill="#fbf7fd" stroke="#7b3fa0" stroke-width="2"/>
-    <circle cx="16" cy="14" r="3" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>
-    <circle cx="16" cy="52" r="3" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>
-    <circle cx="64" cy="14" r="3" fill="none" stroke="#333" stroke-width="1.5"/>
-    <circle cx="64" cy="52" r="3" fill="none" stroke="#333" stroke-width="1.5"/>
-    <text x="16" y="25" font-size="7" text-anchor="middle" fill="#7b3fa0" font-weight="700">A1</text>
-    <text x="16" y="47" font-size="7" text-anchor="middle" fill="#7b3fa0" font-weight="700">A2</text>
-    <text x="64" y="25" font-size="7" text-anchor="middle" fill="#333" font-weight="700">1</text>
-    <text x="64" y="47" font-size="7" text-anchor="middle" fill="#333" font-weight="700">2</text>
-    <circle cx="34" cy="33" r="8" fill="none" stroke="#7b3fa0" stroke-width="2"/>
-    <path d="M29 33 q2.5 -5 5 0 q2.5 5 5 0" fill="none" stroke="#7b3fa0" stroke-width="1.2"/>
-    <line x1="52" y1="25" x2="60" y2="35" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>
-    <circle cx="52" cy="25" r="1.8" fill="#333"/>
-    <circle cx="60" cy="41" r="1.8" fill="#333"/>` },
+    <rect x="16" y="0" width="10" height="5" fill="#9aa0a0"/>
+    <rect x="54" y="0" width="10" height="5" fill="#9aa0a0"/>
+    <rect x="4" y="4" width="72" height="58" rx="4" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="2"/>
+    <rect x="10" y="8" width="12" height="11" rx="1.5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
+    <line x1="11" y1="18" x2="21" y2="9" stroke="#54504a" stroke-width="0.6"/>
+    <rect x="10" y="46" width="12" height="11" rx="1.5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
+    <line x1="11" y1="47" x2="21" y2="56" stroke="#54504a" stroke-width="0.6"/>
+    <rect x="58" y="8" width="12" height="11" rx="1.5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
+    <line x1="59" y1="18" x2="69" y2="9" stroke="#54504a" stroke-width="0.6"/>
+    <rect x="58" y="46" width="12" height="11" rx="1.5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
+    <line x1="59" y1="47" x2="69" y2="56" stroke="#54504a" stroke-width="0.6"/>
+    <text x="16" y="26" font-size="6.5" text-anchor="middle" fill="#333" font-weight="700">A1</text>
+    <text x="16" y="44" font-size="6.5" text-anchor="middle" fill="#333" font-weight="700">A2</text>
+    <text x="64" y="26" font-size="6.5" text-anchor="middle" fill="#333" font-weight="700">1</text>
+    <text x="64" y="44" font-size="6.5" text-anchor="middle" fill="#333" font-weight="700">2</text>
+    <circle cx="40" cy="33" r="9" fill="#f4f4f2" stroke="#333" stroke-width="1.6"/>
+    <path d="M34 33 q3 -6 6 0 q3 6 6 0" fill="none" stroke="#7b3fa0" stroke-width="1.3"/>` },
   contacteur: { vb: "0 0 60 50", w: 46, h: 38, svg: `
-    <rect x="2" y="2" width="56" height="46" rx="4" fill="#f3e9f8" stroke="#7b3fa0" stroke-width="2"/>
-    <circle cx="18" cy="25" r="9" fill="none" stroke="#7b3fa0" stroke-width="2"/>
-    <text x="18" y="29" font-size="9" text-anchor="middle" fill="#7b3fa0" font-weight="700">A</text>
-    <rect x="36" y="15" width="16" height="20" fill="none" stroke="#333" stroke-width="2"/>` },
+    <rect x="20" y="0" width="10" height="4" fill="#9aa0a0"/>
+    <rect x="20" y="46" width="10" height="4" fill="#9aa0a0"/>
+    <rect x="2" y="4" width="56" height="42" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <rect x="8" y="8" width="12" height="10" rx="1.5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
+    <line x1="9" y1="17" x2="19" y2="9" stroke="#54504a" stroke-width="0.6"/>
+    <text x="14" y="34" font-size="7" text-anchor="middle" fill="#333" font-weight="700">A</text>
+    <circle cx="14" cy="26" r="6" fill="#f4f4f2" stroke="#333" stroke-width="1.3"/>
+    <rect x="34" y="12" width="18" height="24" fill="#f4f4f2" stroke="#333" stroke-width="1.6"/>
+    <rect x="38" y="8" width="10" height="8" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>
+    <rect x="38" y="34" width="10" height="8" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>` },
   lampe: { vb: "0 0 40 50", w: 34, h: 42, svg: `
     <circle cx="20" cy="18" r="14" fill="#fff7d6" stroke="#d99a2b" stroke-width="2"/>
     <line x1="20" y1="4" x2="20" y2="18" stroke="#d99a2b" stroke-width="1.3"/>
@@ -113,9 +133,13 @@ const COMP_ICONS = {
     <rect x="8" y="4" width="34" height="52" rx="15" fill="#eaf3fc" stroke="#2f80c9" stroke-width="2"/>
     <line x1="16" y1="20" x2="34" y2="20" stroke="#2f80c9" stroke-width="1.5"/>` },
   compteur: { vb: "0 0 70 40", w: 48, h: 27, svg: `
-    <rect x="2" y="2" width="66" height="36" rx="4" fill="#f6f8f5" stroke="#666" stroke-width="2"/>
-    <rect x="10" y="10" width="50" height="14" fill="#222"/>
-    <text x="35" y="21" font-size="9" text-anchor="middle" fill="#5bd15b" font-family="monospace">01234</text>` },
+    <rect x="28" y="0" width="14" height="4" fill="#9aa0a0"/>
+    <rect x="28" y="36" width="14" height="4" fill="#9aa0a0"/>
+    <rect x="2" y="4" width="66" height="32" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <rect x="10" y="10" width="50" height="14" fill="#1c1c1c"/>
+    <text x="35" y="21" font-size="9" text-anchor="middle" fill="#5bd15b" font-family="monospace">01234</text>
+    <rect x="10" y="27" width="8" height="5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.7"/>
+    <rect x="52" y="27" width="8" height="5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.7"/>` },
   permutateur: { vb: "0 0 40 40", w: 26, h: 26, svg: `
     <rect x="3" y="3" width="34" height="34" rx="6" fill="#fff" stroke="#333" stroke-width="2"/>
     <circle cx="10" cy="10" r="2.5" fill="#333"/>
@@ -125,25 +149,35 @@ const COMP_ICONS = {
     <line x1="10" y1="10" x2="30" y2="30" stroke="#333" stroke-width="1.5"/>
     <line x1="30" y1="10" x2="10" y2="30" stroke="#333" stroke-width="1.5"/>` },
   minuterie: { vb: "0 0 60 50", w: 46, h: 38, svg: `
-    <rect x="2" y="2" width="56" height="46" rx="4" fill="#f3e9f8" stroke="#7b3fa0" stroke-width="2"/>
-    <circle cx="18" cy="25" r="9" fill="none" stroke="#7b3fa0" stroke-width="2"/>
-    <line x1="18" y1="25" x2="18" y2="19" stroke="#7b3fa0" stroke-width="1.5"/>
-    <line x1="18" y1="25" x2="22" y2="27" stroke="#7b3fa0" stroke-width="1.5"/>
-    <rect x="36" y="15" width="16" height="20" fill="none" stroke="#333" stroke-width="2"/>` },
+    <rect x="20" y="0" width="10" height="4" fill="#9aa0a0"/>
+    <rect x="20" y="46" width="10" height="4" fill="#9aa0a0"/>
+    <rect x="2" y="4" width="56" height="42" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <rect x="8" y="8" width="12" height="10" rx="1.5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
+    <line x1="9" y1="17" x2="19" y2="9" stroke="#54504a" stroke-width="0.6"/>
+    <circle cx="14" cy="28" r="8" fill="#f4f4f2" stroke="#333" stroke-width="1.4"/>
+    <line x1="14" y1="28" x2="14" y2="22" stroke="#333" stroke-width="1.4"/>
+    <line x1="14" y1="28" x2="18" y2="30" stroke="#333" stroke-width="1.4"/>
+    <rect x="34" y="12" width="18" height="24" fill="#f4f4f2" stroke="#333" stroke-width="1.6"/>
+    <rect x="38" y="8" width="10" height="8" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>
+    <rect x="38" y="34" width="10" height="8" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>` },
   detecteur: { vb: "0 0 40 40", w: 26, h: 26, svg: `
     <rect x="4" y="14" width="32" height="20" rx="4" fill="#fff" stroke="#333" stroke-width="2"/>
     <path d="M10 14 Q20 -2 30 14" fill="#eee" stroke="#333" stroke-width="1.5"/>
     <circle cx="20" cy="24" r="3" fill="#c0392b"/>` },
   transformateur: { vb: "0 0 70 50", w: 46, h: 33, svg: `
-    <rect x="2" y="4" width="66" height="42" rx="4" fill="#eef3fb" stroke="#2f6fd1" stroke-width="2"/>
-    <circle cx="20" cy="14" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.5"/>
-    <circle cx="20" cy="24" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.5"/>
-    <circle cx="20" cy="34" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.5"/>
+    <rect x="28" y="0" width="14" height="4" fill="#9aa0a0"/>
+    <rect x="28" y="46" width="14" height="4" fill="#9aa0a0"/>
+    <rect x="2" y="4" width="66" height="42" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <circle cx="18" cy="14" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.6"/>
+    <circle cx="18" cy="24" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.6"/>
+    <circle cx="18" cy="34" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.6"/>
     <line x1="35" y1="8" x2="35" y2="42" stroke="#333" stroke-width="2"/>
     <line x1="39" y1="8" x2="39" y2="42" stroke="#333" stroke-width="2"/>
-    <circle cx="52" cy="14" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.5"/>
-    <circle cx="52" cy="24" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.5"/>
-    <circle cx="52" cy="34" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.5"/>` },
+    <circle cx="52" cy="14" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.6"/>
+    <circle cx="52" cy="24" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.6"/>
+    <circle cx="52" cy="34" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.6"/>
+    <rect x="8" y="8" width="8" height="6" fill="#d8d4c8" stroke="#54504a" stroke-width="0.6"/>
+    <rect x="54" y="8" width="8" height="6" fill="#d8d4c8" stroke="#54504a" stroke-width="0.6"/>` },
   sonnette: { vb: "0 0 40 50", w: 30, h: 38, svg: `
     <path d="M20 6 Q10 6 10 22 L8 30 h24 l-2 -8 Q30 6 20 6 Z" fill="#f0d24a" stroke="#8a6d00" stroke-width="2"/>
     <circle cx="20" cy="36" r="4" fill="#8a6d00"/>` },
@@ -151,11 +185,15 @@ const COMP_ICONS = {
     <rect x="4" y="10" width="52" height="34" rx="4" fill="#f5f0e8" stroke="#b5651d" stroke-width="2"/>
     ${[14, 24, 34, 44].map(x => `<line x1="${x}" y1="14" x2="${x}" y2="40" stroke="#b5651d" stroke-width="2"/>`).join("")}` },
   programmateur: { vb: "0 0 60 40", w: 44, h: 30, svg: `
-    <rect x="2" y="2" width="56" height="36" rx="4" fill="#fff" stroke="#333" stroke-width="2"/>
-    <circle cx="20" cy="20" r="12" fill="#eee" stroke="#333" stroke-width="1.5"/>
+    <rect x="22" y="0" width="14" height="4" fill="#9aa0a0"/>
+    <rect x="22" y="36" width="14" height="4" fill="#9aa0a0"/>
+    <rect x="2" y="4" width="56" height="32" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <circle cx="20" cy="20" r="11" fill="#f4f4f2" stroke="#333" stroke-width="1.5"/>
     <line x1="20" y1="20" x2="20" y2="12" stroke="#333" stroke-width="1.5"/>
-    <line x1="20" y1="20" x2="26" y2="24" stroke="#333" stroke-width="1.5"/>
-    <text x="44" y="24" font-size="9" text-anchor="middle" fill="#333" font-weight="700">FP</text>` },
+    <line x1="20" y1="20" x2="25" y2="24" stroke="#333" stroke-width="1.5"/>
+    <text x="46" y="23" font-size="8" text-anchor="middle" fill="#333" font-weight="700">FP</text>
+    <rect x="6" y="8" width="7" height="5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.6"/>
+    <rect x="47" y="8" width="7" height="5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.6"/>` },
   "volet-roulant": { vb: "0 0 50 60", w: 34, h: 42, svg: `
     <rect x="4" y="4" width="42" height="14" rx="2" fill="#8a8a8a" stroke="#333" stroke-width="1.5"/>
     <rect x="4" y="20" width="42" height="34" rx="2" fill="#eaf3fc" stroke="#2f6fd1" stroke-width="1.5"/>
@@ -171,10 +209,17 @@ const COMP_ICONS = {
     <path d="M25 25 q0 14 -10 14 q-4 -6 2 -10 Z" fill="#2e8b2e"/>
     <circle cx="25" cy="25" r="3" fill="#2e8b2e"/>` },
   differentiel: { vb: "0 0 60 50", w: 42, h: 35, svg: `
-    <rect x="2" y="2" width="56" height="46" rx="4" fill="#fff" stroke="#333" stroke-width="2"/>
-    <line x1="18" y1="10" x2="18" y2="22" stroke="#c0392b" stroke-width="3" stroke-linecap="round" transform="rotate(-18 18 16)"/>
-    <line x1="42" y1="10" x2="42" y2="22" stroke="#2f6fd1" stroke-width="3" stroke-linecap="round" transform="rotate(-18 42 16)"/>
-    <text x="30" y="40" font-size="9" text-anchor="middle" fill="#333" font-weight="700">30mA</text>` },
+    <rect x="20" y="0" width="10" height="4" fill="#9aa0a0"/>
+    <rect x="20" y="46" width="10" height="4" fill="#9aa0a0"/>
+    <rect x="2" y="4" width="56" height="42" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <rect x="10" y="7" width="12" height="8" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>
+    <rect x="34" y="7" width="12" height="8" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>
+    <rect x="12" y="18" width="12" height="16" rx="2" fill="#f4f4f2" stroke="#333" stroke-width="1.3"/>
+    <rect x="34" y="18" width="12" height="16" rx="2" fill="#f4f4f2" stroke="#333" stroke-width="1.3"/>
+    <line x1="18" y1="21" x2="18" y2="31" stroke="#c0392b" stroke-width="3" stroke-linecap="round" transform="rotate(-16 18 26)"/>
+    <line x1="40" y1="21" x2="40" y2="31" stroke="#2f6fd1" stroke-width="3" stroke-linecap="round" transform="rotate(-16 40 26)"/>
+    <rect x="10" y="39" width="12" height="7" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>
+    <rect x="34" y="39" width="12" height="7" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>` },
   "plaque-cuisson": { vb: "0 0 60 50", w: 40, h: 33, svg: `
     <rect x="2" y="2" width="56" height="46" rx="4" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
     <circle cx="18" cy="16" r="8" fill="none" stroke="#e08a1e" stroke-width="1.5"/>
@@ -182,15 +227,21 @@ const COMP_ICONS = {
     <circle cx="18" cy="34" r="6" fill="none" stroke="#e08a1e" stroke-width="1.5"/>
     <circle cx="42" cy="34" r="8" fill="none" stroke="#e08a1e" stroke-width="1.5"/>` },
   "interrupteur-horaire": { vb: "0 0 40 40", w: 24, h: 24, svg: `
-    <rect x="3" y="3" width="34" height="34" rx="6" fill="#fff" stroke="#333" stroke-width="2"/>
-    <circle cx="20" cy="20" r="11" fill="#eee" stroke="#333" stroke-width="1.5"/>
-    <line x1="20" y1="20" x2="20" y2="12" stroke="#333" stroke-width="1.5"/>
-    <line x1="20" y1="20" x2="25" y2="23" stroke="#333" stroke-width="1.5"/>` },
+    <rect x="14" y="0" width="12" height="4" fill="#9aa0a0"/>
+    <rect x="14" y="36" width="12" height="4" fill="#9aa0a0"/>
+    <rect x="4" y="4" width="32" height="32" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <circle cx="20" cy="20" r="10" fill="#f4f4f2" stroke="#333" stroke-width="1.4"/>
+    <line x1="20" y1="20" x2="20" y2="13" stroke="#333" stroke-width="1.4"/>
+    <line x1="20" y1="20" x2="25" y2="23" stroke="#333" stroke-width="1.4"/>` },
   "module-yokis": { vb: "0 0 50 50", w: 34, h: 34, svg: `
-    <rect x="6" y="10" width="38" height="30" rx="4" fill="#f3e9f8" stroke="#7b3fa0" stroke-width="2"/>
-    <text x="25" y="30" font-size="14" text-anchor="middle" fill="#7b3fa0" font-weight="700">Y</text>
+    <rect x="18" y="4" width="14" height="4" fill="#9aa0a0"/>
+    <rect x="18" y="42" width="14" height="4" fill="#9aa0a0"/>
+    <rect x="6" y="10" width="38" height="30" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <text x="25" y="30" font-size="13" text-anchor="middle" fill="#7b3fa0" font-weight="700">Y</text>
     <path d="M36 8 q4 -4 8 0" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>
-    <path d="M38 5 q6 -6 12 0" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>` },
+    <path d="M38 5 q6 -6 12 0" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>
+    <rect x="10" y="14" width="7" height="5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.6"/>
+    <rect x="33" y="14" width="7" height="5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.6"/>` },
   // ---- Icônes utilisées uniquement comme illustrations de cours (pas de montage atelier associé) ----
   fusible: { vb: "0 0 60 30", w: 42, h: 21, svg: `
     <rect x="4" y="8" width="52" height="14" rx="7" fill="#fdf6e3" stroke="#8a6d00" stroke-width="2"/>
@@ -253,6 +304,83 @@ function compIcon(type) {
   const spec = COMP_ICONS[type];
   if (!spec) return "";
   return `<svg viewBox="${spec.vb}" width="${spec.w}" height="${spec.h}">${spec.svg}</svg>`;
+}
+
+// ---------- Fond "tableau électrique" (coffret + rail DIN) ----------
+// Types de composants réellement montés sur rail DIN dans un tableau électrique.
+// Le bornier/bornier-terre est volontairement exclu : il est traité comme une
+// boîte de dérivation murale distincte (voir COMP_ICONS.bornier).
+const TABLEAU_RAIL_TYPES = new Set([
+  "disjoncteur", "differentiel", "telerupteur", "contacteur", "minuterie",
+  "compteur", "transformateur", "programmateur", "interrupteur-horaire", "module-yokis"
+]);
+const TABLEAU_PADDING = 20;
+const TABLEAU_MERGE_GAP = 60; // écart horizontal max pour regrouper des modules dans le même coffret
+
+function rectsOverlap(a, b) {
+  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+}
+
+// Calcule un (ou plusieurs) coffret(s) "tableau électrique" en regroupant les
+// modules rail DIN par proximité horizontale, pour ne jamais engloutir un
+// composant étranger (bouton-poussoir, détecteur...) positionné entre deux
+// modules éloignés sur le même plan de travail.
+function computeTableauBoxes(exo) {
+  const comps = exo.components.filter(c => TABLEAU_RAIL_TYPES.has(c.type));
+  if (!comps.length) return [];
+  const others = exo.components.filter(c => !TABLEAU_RAIL_TYPES.has(c.type));
+
+  const sorted = comps.slice().sort((a, b) => a.x - b.x);
+  const groups = [];
+  let current = [sorted[0]];
+  let currentMaxX = sorted[0].x + sorted[0].w;
+  for (let i = 1; i < sorted.length; i++) {
+    const c = sorted[i];
+    if (c.x - currentMaxX <= TABLEAU_MERGE_GAP) {
+      current.push(c);
+      currentMaxX = Math.max(currentMaxX, c.x + c.w);
+    } else {
+      groups.push(current);
+      current = [c];
+      currentMaxX = c.x + c.w;
+    }
+  }
+  groups.push(current);
+
+  return groups.map(group => {
+    const minX = Math.min(...group.map(c => c.x));
+    const minY = Math.min(...group.map(c => c.y));
+    const maxX = Math.max(...group.map(c => c.x + c.w));
+    const maxY = Math.max(...group.map(c => c.y + c.h));
+    // Réduit le rembourrage si un composant étranger est trop proche, pour ne
+    // jamais le faire déborder visuellement dans le coffret.
+    let pad = TABLEAU_PADDING;
+    const tight = { x: minX - pad, y: minY - pad, w: (maxX - minX) + pad * 2, h: (maxY - minY) + pad * 2 };
+    if (others.some(o => rectsOverlap(tight, o))) pad = 6;
+    return {
+      x: Math.max(0, minX - pad),
+      y: Math.max(0, minY - pad - 24), // place pour l'étiquette
+      w: (maxX - minX) + pad * 2,
+      h: (maxY - minY) + pad * 2 + 24
+    };
+  });
+}
+
+function renderTableauEnclosure(exo, canvas) {
+  const boxes = computeTableauBoxes(exo);
+  boxes.forEach(box => {
+    const enclosure = document.createElement("div");
+    enclosure.className = "tableau-enclosure";
+    enclosure.style.left = box.x + "px";
+    enclosure.style.top = box.y + "px";
+    enclosure.style.width = box.w + "px";
+    enclosure.style.height = box.h + "px";
+    const label = document.createElement("span");
+    label.className = "tableau-label";
+    label.textContent = "Tableau électrique";
+    enclosure.appendChild(label);
+    canvas.appendChild(enclosure);
+  });
 }
 
 // ---------- Info-bulles sur les composants ----------
@@ -379,6 +507,8 @@ function renderCanvas() {
   svg.setAttribute("height", currentExo.canvasH);
   addTerrePattern(svg, "terre-pattern-live");
   canvas.appendChild(svg);
+
+  renderTableauEnclosure(currentExo, canvas);
 
   // Composants + bornes
   currentExo.components.forEach(comp => {
@@ -819,6 +949,8 @@ function buildExoSchema(exo) {
   svg.setAttribute("height", exo.canvasH);
   addTerrePattern(svg, patternId);
   canvas.appendChild(svg);
+
+  renderTableauEnclosure(exo, canvas);
 
   exo.components.forEach(comp => {
     const box = document.createElement("div");
