@@ -53,17 +53,17 @@ function elbowPath(x1, y1, x2, y2) {
 // ---------- Icônes réalistes des composants ----------
 const COMP_ICONS = {
   disjoncteur: { vb: "0 0 40 50", w: 24, h: 30, svg: `
-    <rect x="16" y="0" width="8" height="4" fill="#9aa0a0"/>
-    <rect x="16" y="46" width="8" height="4" fill="#9aa0a0"/>
-    <rect x="4" y="4" width="32" height="42" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
-    <rect x="12" y="7" width="16" height="9" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
-    <line x1="13" y1="15" x2="27" y2="8" stroke="#54504a" stroke-width="0.6"/>
-    <circle cx="20" cy="11.5" r="1.3" fill="#8a8a8a"/>
+    <rect x="16" y="0" width="8" height="4" fill="#767e79"/>
+    <rect x="16" y="46" width="8" height="4" fill="#767e79"/>
+    <rect x="4" y="4" width="32" height="42" rx="3" fill="#e2e4e0" stroke="#3d4548" stroke-width="2.3"/>
+    <rect x="12" y="7" width="16" height="9" rx="1" fill="#2e2e2e" stroke="#000" stroke-width="1.1"/>
+    <line x1="13" y1="15" x2="27" y2="8" stroke="#d0d0d0" stroke-width="1.2"/>
+    <circle cx="20" cy="11.5" r="1.7" fill="#c9c9c9"/>
     <rect x="13" y="19" width="14" height="18" rx="2" fill="#f4f4f2" stroke="#333" stroke-width="1.3"/>
     <line x1="20" y1="22" x2="20" y2="33" stroke="#c0392b" stroke-width="3.5" stroke-linecap="round" transform="rotate(-16 20 27)"/>
-    <rect x="12" y="39" width="16" height="9" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
-    <line x1="13" y1="40" x2="27" y2="47" stroke="#54504a" stroke-width="0.6"/>
-    <circle cx="20" cy="43.5" r="1.3" fill="#8a8a8a"/>` },
+    <rect x="12" y="39" width="16" height="9" rx="1" fill="#2e2e2e" stroke="#000" stroke-width="1.1"/>
+    <line x1="13" y1="40" x2="27" y2="47" stroke="#d0d0d0" stroke-width="1.2"/>
+    <circle cx="20" cy="43.5" r="1.7" fill="#c9c9c9"/>` },
   bornier: { vb: "0 0 92 34", w: 60, h: 22, svg: `
     <rect x="2" y="2" width="88" height="30" rx="6" fill="#efece0" stroke="#8a7f5c" stroke-width="2" stroke-dasharray="5,3"/>
     ${[16, 38, 60, 78].map(x => `
@@ -88,17 +88,17 @@ const COMP_ICONS = {
     <rect x="3" y="3" width="34" height="34" rx="6" fill="#fff" stroke="#333" stroke-width="2"/>
     <circle cx="20" cy="20" r="10" fill="#d1493f" stroke="#333" stroke-width="1.5"/>` },
   telerupteur: { vb: "0 0 80 66", w: 52, h: 43, svg: `
-    <rect x="16" y="0" width="10" height="5" fill="#9aa0a0"/>
-    <rect x="54" y="0" width="10" height="5" fill="#9aa0a0"/>
-    <rect x="4" y="4" width="72" height="58" rx="4" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="2"/>
-    <rect x="10" y="8" width="12" height="11" rx="1.5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
-    <line x1="11" y1="18" x2="21" y2="9" stroke="#54504a" stroke-width="0.6"/>
-    <rect x="10" y="46" width="12" height="11" rx="1.5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
-    <line x1="11" y1="47" x2="21" y2="56" stroke="#54504a" stroke-width="0.6"/>
-    <rect x="58" y="8" width="12" height="11" rx="1.5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
-    <line x1="59" y1="18" x2="69" y2="9" stroke="#54504a" stroke-width="0.6"/>
-    <rect x="58" y="46" width="12" height="11" rx="1.5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
-    <line x1="59" y1="47" x2="69" y2="56" stroke="#54504a" stroke-width="0.6"/>
+    <rect x="16" y="0" width="10" height="5" fill="#767e79"/>
+    <rect x="54" y="0" width="10" height="5" fill="#767e79"/>
+    <rect x="4" y="4" width="72" height="58" rx="4" fill="#e2e4e0" stroke="#3d4548" stroke-width="2.5"/>
+    <rect x="10" y="8" width="12" height="11" rx="1.5" fill="#2e2e2e" stroke="#000" stroke-width="1.1"/>
+    <line x1="11" y1="18" x2="21" y2="9" stroke="#d0d0d0" stroke-width="1.2"/>
+    <rect x="10" y="46" width="12" height="11" rx="1.5" fill="#2e2e2e" stroke="#000" stroke-width="1.1"/>
+    <line x1="11" y1="47" x2="21" y2="56" stroke="#d0d0d0" stroke-width="1.2"/>
+    <rect x="58" y="8" width="12" height="11" rx="1.5" fill="#2e2e2e" stroke="#000" stroke-width="1.1"/>
+    <line x1="59" y1="18" x2="69" y2="9" stroke="#d0d0d0" stroke-width="1.2"/>
+    <rect x="58" y="46" width="12" height="11" rx="1.5" fill="#2e2e2e" stroke="#000" stroke-width="1.1"/>
+    <line x1="59" y1="47" x2="69" y2="56" stroke="#d0d0d0" stroke-width="1.2"/>
     <text x="16" y="26" font-size="6.5" text-anchor="middle" fill="#333" font-weight="700">A1</text>
     <text x="16" y="44" font-size="6.5" text-anchor="middle" fill="#333" font-weight="700">A2</text>
     <text x="64" y="26" font-size="6.5" text-anchor="middle" fill="#333" font-weight="700">1</text>
@@ -106,16 +106,16 @@ const COMP_ICONS = {
     <circle cx="40" cy="33" r="9" fill="#f4f4f2" stroke="#333" stroke-width="1.6"/>
     <path d="M34 33 q3 -6 6 0 q3 6 6 0" fill="none" stroke="#7b3fa0" stroke-width="1.3"/>` },
   contacteur: { vb: "0 0 60 50", w: 46, h: 38, svg: `
-    <rect x="20" y="0" width="10" height="4" fill="#9aa0a0"/>
-    <rect x="20" y="46" width="10" height="4" fill="#9aa0a0"/>
-    <rect x="2" y="4" width="56" height="42" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
-    <rect x="8" y="8" width="12" height="10" rx="1.5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
-    <line x1="9" y1="17" x2="19" y2="9" stroke="#54504a" stroke-width="0.6"/>
+    <rect x="20" y="0" width="10" height="4" fill="#767e79"/>
+    <rect x="20" y="46" width="10" height="4" fill="#767e79"/>
+    <rect x="2" y="4" width="56" height="42" rx="3" fill="#e2e4e0" stroke="#3d4548" stroke-width="2.3"/>
+    <rect x="8" y="8" width="12" height="10" rx="1.5" fill="#2e2e2e" stroke="#000" stroke-width="1.1"/>
+    <line x1="9" y1="17" x2="19" y2="9" stroke="#d0d0d0" stroke-width="1.2"/>
     <text x="14" y="34" font-size="7" text-anchor="middle" fill="#333" font-weight="700">A</text>
     <circle cx="14" cy="26" r="6" fill="#f4f4f2" stroke="#333" stroke-width="1.3"/>
     <rect x="34" y="12" width="18" height="24" fill="#f4f4f2" stroke="#333" stroke-width="1.6"/>
-    <rect x="38" y="8" width="10" height="8" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>
-    <rect x="38" y="34" width="10" height="8" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>` },
+    <rect x="38" y="8" width="10" height="8" rx="1" fill="#2e2e2e" stroke="#000" stroke-width="1"/>
+    <rect x="38" y="34" width="10" height="8" rx="1" fill="#2e2e2e" stroke="#000" stroke-width="1"/>` },
   lampe: { vb: "0 0 40 50", w: 34, h: 42, svg: `
     <circle cx="20" cy="18" r="14" fill="#fff7d6" stroke="#d99a2b" stroke-width="2"/>
     <line x1="20" y1="4" x2="20" y2="18" stroke="#d99a2b" stroke-width="1.3"/>
@@ -133,13 +133,13 @@ const COMP_ICONS = {
     <rect x="8" y="4" width="34" height="52" rx="15" fill="#eaf3fc" stroke="#2f80c9" stroke-width="2"/>
     <line x1="16" y1="20" x2="34" y2="20" stroke="#2f80c9" stroke-width="1.5"/>` },
   compteur: { vb: "0 0 70 40", w: 48, h: 27, svg: `
-    <rect x="28" y="0" width="14" height="4" fill="#9aa0a0"/>
-    <rect x="28" y="36" width="14" height="4" fill="#9aa0a0"/>
-    <rect x="2" y="4" width="66" height="32" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <rect x="28" y="0" width="14" height="4" fill="#767e79"/>
+    <rect x="28" y="36" width="14" height="4" fill="#767e79"/>
+    <rect x="2" y="4" width="66" height="32" rx="3" fill="#e2e4e0" stroke="#3d4548" stroke-width="2.3"/>
     <rect x="10" y="10" width="50" height="14" fill="#1c1c1c"/>
     <text x="35" y="21" font-size="9" text-anchor="middle" fill="#5bd15b" font-family="monospace">01234</text>
-    <rect x="10" y="27" width="8" height="5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.7"/>
-    <rect x="52" y="27" width="8" height="5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.7"/>` },
+    <rect x="10" y="27" width="8" height="5" fill="#2e2e2e" stroke="#d0d0d0" stroke-width="1.1"/>
+    <rect x="52" y="27" width="8" height="5" fill="#2e2e2e" stroke="#d0d0d0" stroke-width="1.1"/>` },
   permutateur: { vb: "0 0 40 40", w: 26, h: 26, svg: `
     <rect x="3" y="3" width="34" height="34" rx="6" fill="#fff" stroke="#333" stroke-width="2"/>
     <circle cx="10" cy="10" r="2.5" fill="#333"/>
@@ -149,25 +149,25 @@ const COMP_ICONS = {
     <line x1="10" y1="10" x2="30" y2="30" stroke="#333" stroke-width="1.5"/>
     <line x1="30" y1="10" x2="10" y2="30" stroke="#333" stroke-width="1.5"/>` },
   minuterie: { vb: "0 0 60 50", w: 46, h: 38, svg: `
-    <rect x="20" y="0" width="10" height="4" fill="#9aa0a0"/>
-    <rect x="20" y="46" width="10" height="4" fill="#9aa0a0"/>
-    <rect x="2" y="4" width="56" height="42" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
-    <rect x="8" y="8" width="12" height="10" rx="1.5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.9"/>
-    <line x1="9" y1="17" x2="19" y2="9" stroke="#54504a" stroke-width="0.6"/>
+    <rect x="20" y="0" width="10" height="4" fill="#767e79"/>
+    <rect x="20" y="46" width="10" height="4" fill="#767e79"/>
+    <rect x="2" y="4" width="56" height="42" rx="3" fill="#e2e4e0" stroke="#3d4548" stroke-width="2.3"/>
+    <rect x="8" y="8" width="12" height="10" rx="1.5" fill="#2e2e2e" stroke="#000" stroke-width="1.1"/>
+    <line x1="9" y1="17" x2="19" y2="9" stroke="#d0d0d0" stroke-width="1.2"/>
     <circle cx="14" cy="28" r="8" fill="#f4f4f2" stroke="#333" stroke-width="1.4"/>
     <line x1="14" y1="28" x2="14" y2="22" stroke="#333" stroke-width="1.4"/>
     <line x1="14" y1="28" x2="18" y2="30" stroke="#333" stroke-width="1.4"/>
     <rect x="34" y="12" width="18" height="24" fill="#f4f4f2" stroke="#333" stroke-width="1.6"/>
-    <rect x="38" y="8" width="10" height="8" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>
-    <rect x="38" y="34" width="10" height="8" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>` },
+    <rect x="38" y="8" width="10" height="8" rx="1" fill="#2e2e2e" stroke="#000" stroke-width="1"/>
+    <rect x="38" y="34" width="10" height="8" rx="1" fill="#2e2e2e" stroke="#000" stroke-width="1"/>` },
   detecteur: { vb: "0 0 40 40", w: 26, h: 26, svg: `
     <rect x="4" y="14" width="32" height="20" rx="4" fill="#fff" stroke="#333" stroke-width="2"/>
     <path d="M10 14 Q20 -2 30 14" fill="#eee" stroke="#333" stroke-width="1.5"/>
     <circle cx="20" cy="24" r="3" fill="#c0392b"/>` },
   transformateur: { vb: "0 0 70 50", w: 46, h: 33, svg: `
-    <rect x="28" y="0" width="14" height="4" fill="#9aa0a0"/>
-    <rect x="28" y="46" width="14" height="4" fill="#9aa0a0"/>
-    <rect x="2" y="4" width="66" height="42" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <rect x="28" y="0" width="14" height="4" fill="#767e79"/>
+    <rect x="28" y="46" width="14" height="4" fill="#767e79"/>
+    <rect x="2" y="4" width="66" height="42" rx="3" fill="#e2e4e0" stroke="#3d4548" stroke-width="2.3"/>
     <circle cx="18" cy="14" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.6"/>
     <circle cx="18" cy="24" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.6"/>
     <circle cx="18" cy="34" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.6"/>
@@ -176,8 +176,8 @@ const COMP_ICONS = {
     <circle cx="52" cy="14" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.6"/>
     <circle cx="52" cy="24" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.6"/>
     <circle cx="52" cy="34" r="5" fill="none" stroke="#2f6fd1" stroke-width="1.6"/>
-    <rect x="8" y="8" width="8" height="6" fill="#d8d4c8" stroke="#54504a" stroke-width="0.6"/>
-    <rect x="54" y="8" width="8" height="6" fill="#d8d4c8" stroke="#54504a" stroke-width="0.6"/>` },
+    <rect x="8" y="8" width="8" height="6" fill="#2e2e2e" stroke="#d0d0d0" stroke-width="1.2"/>
+    <rect x="54" y="8" width="8" height="6" fill="#2e2e2e" stroke="#d0d0d0" stroke-width="1.2"/>` },
   sonnette: { vb: "0 0 40 50", w: 30, h: 38, svg: `
     <path d="M20 6 Q10 6 10 22 L8 30 h24 l-2 -8 Q30 6 20 6 Z" fill="#f0d24a" stroke="#8a6d00" stroke-width="2"/>
     <circle cx="20" cy="36" r="4" fill="#8a6d00"/>` },
@@ -185,15 +185,15 @@ const COMP_ICONS = {
     <rect x="4" y="10" width="52" height="34" rx="4" fill="#f5f0e8" stroke="#b5651d" stroke-width="2"/>
     ${[14, 24, 34, 44].map(x => `<line x1="${x}" y1="14" x2="${x}" y2="40" stroke="#b5651d" stroke-width="2"/>`).join("")}` },
   programmateur: { vb: "0 0 60 40", w: 44, h: 30, svg: `
-    <rect x="22" y="0" width="14" height="4" fill="#9aa0a0"/>
-    <rect x="22" y="36" width="14" height="4" fill="#9aa0a0"/>
-    <rect x="2" y="4" width="56" height="32" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <rect x="22" y="0" width="14" height="4" fill="#767e79"/>
+    <rect x="22" y="36" width="14" height="4" fill="#767e79"/>
+    <rect x="2" y="4" width="56" height="32" rx="3" fill="#e2e4e0" stroke="#3d4548" stroke-width="2.3"/>
     <circle cx="20" cy="20" r="11" fill="#f4f4f2" stroke="#333" stroke-width="1.5"/>
     <line x1="20" y1="20" x2="20" y2="12" stroke="#333" stroke-width="1.5"/>
     <line x1="20" y1="20" x2="25" y2="24" stroke="#333" stroke-width="1.5"/>
     <text x="46" y="23" font-size="8" text-anchor="middle" fill="#333" font-weight="700">FP</text>
-    <rect x="6" y="8" width="7" height="5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.6"/>
-    <rect x="47" y="8" width="7" height="5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.6"/>` },
+    <rect x="6" y="8" width="7" height="5" fill="#2e2e2e" stroke="#d0d0d0" stroke-width="1.2"/>
+    <rect x="47" y="8" width="7" height="5" fill="#2e2e2e" stroke="#d0d0d0" stroke-width="1.2"/>` },
   "volet-roulant": { vb: "0 0 50 60", w: 34, h: 42, svg: `
     <rect x="4" y="4" width="42" height="14" rx="2" fill="#8a8a8a" stroke="#333" stroke-width="1.5"/>
     <rect x="4" y="20" width="42" height="34" rx="2" fill="#eaf3fc" stroke="#2f6fd1" stroke-width="1.5"/>
@@ -209,17 +209,17 @@ const COMP_ICONS = {
     <path d="M25 25 q0 14 -10 14 q-4 -6 2 -10 Z" fill="#2e8b2e"/>
     <circle cx="25" cy="25" r="3" fill="#2e8b2e"/>` },
   differentiel: { vb: "0 0 60 50", w: 42, h: 35, svg: `
-    <rect x="20" y="0" width="10" height="4" fill="#9aa0a0"/>
-    <rect x="20" y="46" width="10" height="4" fill="#9aa0a0"/>
-    <rect x="2" y="4" width="56" height="42" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
-    <rect x="10" y="7" width="12" height="8" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>
-    <rect x="34" y="7" width="12" height="8" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>
+    <rect x="20" y="0" width="10" height="4" fill="#767e79"/>
+    <rect x="20" y="46" width="10" height="4" fill="#767e79"/>
+    <rect x="2" y="4" width="56" height="42" rx="3" fill="#e2e4e0" stroke="#3d4548" stroke-width="2.3"/>
+    <rect x="10" y="7" width="12" height="8" rx="1" fill="#2e2e2e" stroke="#000" stroke-width="1"/>
+    <rect x="34" y="7" width="12" height="8" rx="1" fill="#2e2e2e" stroke="#000" stroke-width="1"/>
     <rect x="12" y="18" width="12" height="16" rx="2" fill="#f4f4f2" stroke="#333" stroke-width="1.3"/>
     <rect x="34" y="18" width="12" height="16" rx="2" fill="#f4f4f2" stroke="#333" stroke-width="1.3"/>
     <line x1="18" y1="21" x2="18" y2="31" stroke="#c0392b" stroke-width="3" stroke-linecap="round" transform="rotate(-16 18 26)"/>
     <line x1="40" y1="21" x2="40" y2="31" stroke="#2f6fd1" stroke-width="3" stroke-linecap="round" transform="rotate(-16 40 26)"/>
-    <rect x="10" y="39" width="12" height="7" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>
-    <rect x="34" y="39" width="12" height="7" rx="1" fill="#d8d4c8" stroke="#54504a" stroke-width="0.8"/>` },
+    <rect x="10" y="39" width="12" height="7" rx="1" fill="#2e2e2e" stroke="#000" stroke-width="1"/>
+    <rect x="34" y="39" width="12" height="7" rx="1" fill="#2e2e2e" stroke="#000" stroke-width="1"/>` },
   "plaque-cuisson": { vb: "0 0 60 50", w: 40, h: 33, svg: `
     <rect x="2" y="2" width="56" height="46" rx="4" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
     <circle cx="18" cy="16" r="8" fill="none" stroke="#e08a1e" stroke-width="1.5"/>
@@ -227,21 +227,21 @@ const COMP_ICONS = {
     <circle cx="18" cy="34" r="6" fill="none" stroke="#e08a1e" stroke-width="1.5"/>
     <circle cx="42" cy="34" r="8" fill="none" stroke="#e08a1e" stroke-width="1.5"/>` },
   "interrupteur-horaire": { vb: "0 0 40 40", w: 24, h: 24, svg: `
-    <rect x="14" y="0" width="12" height="4" fill="#9aa0a0"/>
-    <rect x="14" y="36" width="12" height="4" fill="#9aa0a0"/>
-    <rect x="4" y="4" width="32" height="32" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <rect x="14" y="0" width="12" height="4" fill="#767e79"/>
+    <rect x="14" y="36" width="12" height="4" fill="#767e79"/>
+    <rect x="4" y="4" width="32" height="32" rx="3" fill="#e2e4e0" stroke="#3d4548" stroke-width="2.3"/>
     <circle cx="20" cy="20" r="10" fill="#f4f4f2" stroke="#333" stroke-width="1.4"/>
     <line x1="20" y1="20" x2="20" y2="13" stroke="#333" stroke-width="1.4"/>
     <line x1="20" y1="20" x2="25" y2="23" stroke="#333" stroke-width="1.4"/>` },
   "module-yokis": { vb: "0 0 50 50", w: 34, h: 34, svg: `
-    <rect x="18" y="4" width="14" height="4" fill="#9aa0a0"/>
-    <rect x="18" y="42" width="14" height="4" fill="#9aa0a0"/>
-    <rect x="6" y="10" width="38" height="30" rx="3" fill="#e4e6e3" stroke="#5f6a6e" stroke-width="1.8"/>
+    <rect x="18" y="4" width="14" height="4" fill="#767e79"/>
+    <rect x="18" y="42" width="14" height="4" fill="#767e79"/>
+    <rect x="6" y="10" width="38" height="30" rx="3" fill="#e2e4e0" stroke="#3d4548" stroke-width="2.3"/>
     <text x="25" y="30" font-size="13" text-anchor="middle" fill="#7b3fa0" font-weight="700">Y</text>
     <path d="M36 8 q4 -4 8 0" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>
     <path d="M38 5 q6 -6 12 0" fill="none" stroke="#7b3fa0" stroke-width="1.5"/>
-    <rect x="10" y="14" width="7" height="5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.6"/>
-    <rect x="33" y="14" width="7" height="5" fill="#d8d4c8" stroke="#54504a" stroke-width="0.6"/>` },
+    <rect x="10" y="14" width="7" height="5" fill="#2e2e2e" stroke="#d0d0d0" stroke-width="1.2"/>
+    <rect x="33" y="14" width="7" height="5" fill="#2e2e2e" stroke="#d0d0d0" stroke-width="1.2"/>` },
   // ---- Icônes utilisées uniquement comme illustrations de cours (pas de montage atelier associé) ----
   fusible: { vb: "0 0 60 30", w: 42, h: 21, svg: `
     <rect x="4" y="8" width="52" height="14" rx="7" fill="#fdf6e3" stroke="#8a6d00" stroke-width="2"/>
