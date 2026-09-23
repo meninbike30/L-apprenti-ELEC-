@@ -297,7 +297,43 @@ const COMP_ICONS = {
     <path d="M20 32 l-4 8 h8 z" fill="#e08a1e"/>` },
   tgbt: { vb: "0 0 60 60", w: 40, h: 40, svg: `
     <rect x="4" y="4" width="52" height="52" rx="3" fill="#f6f8f5" stroke="#666" stroke-width="2"/>
-    ${[[12, 12], [30, 12], [12, 26], [30, 26], [12, 40], [30, 40]].map(([x, y]) => `<rect x="${x}" y="${y}" width="14" height="10" fill="#fff" stroke="#333" stroke-width="1"/>`).join("")}` }
+    ${[[12, 12], [30, 12], [12, 26], [30, 26], [12, 40], [30, 40]].map(([x, y]) => `<rect x="${x}" y="${y}" width="14" height="10" fill="#fff" stroke="#333" stroke-width="1"/>`).join("")}` },
+  gache: { vb: "0 0 40 40", w: 26, h: 26, svg: `
+    <rect x="4" y="4" width="32" height="32" rx="4" fill="#eee" stroke="#333" stroke-width="2"/>
+    <rect x="12" y="14" width="16" height="12" rx="2" fill="#999" stroke="#333" stroke-width="1.3"/>
+    <rect x="16" y="8" width="8" height="8" fill="#c0392b"/>` },
+  cellule: { vb: "0 0 60 30", w: 40, h: 20, svg: `
+    <rect x="2" y="8" width="12" height="14" rx="2" fill="#fff" stroke="#333" stroke-width="1.6"/>
+    <rect x="46" y="8" width="12" height="14" rx="2" fill="#fff" stroke="#333" stroke-width="1.6"/>
+    <line x1="14" y1="15" x2="46" y2="15" stroke="#c0392b" stroke-width="1.3" stroke-dasharray="3,3"/>` },
+  onduleur: { vb: "0 0 60 50", w: 40, h: 33, svg: `
+    <rect x="2" y="2" width="56" height="46" rx="4" fill="#e2e4e0" stroke="#3d4548" stroke-width="2.2"/>
+    <path d="M8 30 q6 -14 12 0 t12 0 t12 0" fill="none" stroke="#e08a1e" stroke-width="2"/>
+    <line x1="30" y1="8" x2="30" y2="18" stroke="#2f6fd1" stroke-width="2.5"/>` },
+  "coffret-vdi": { vb: "0 0 60 60", w: 40, h: 40, svg: `
+    <rect x="4" y="4" width="52" height="52" rx="4" fill="#f6f8f5" stroke="#666" stroke-width="2"/>
+    ${[[12, 12], [30, 12], [12, 30], [30, 30]].map(([x, y]) => `<rect x="${x}" y="${y}" width="14" height="14" fill="#fff" stroke="#333" stroke-width="1.2"/>`).join("")}` },
+  "piquet-terre": { vb: "0 0 40 60", w: 26, h: 40, svg: `
+    <line x1="20" y1="4" x2="20" y2="44" stroke="#888" stroke-width="4"/>
+    <path d="M20 44 L14 56 M20 44 L26 56" stroke="#888" stroke-width="4" stroke-linecap="round"/>
+    <line x1="6" y1="4" x2="20" y2="4" stroke="#2e8b2e" stroke-width="3"/>
+    <circle cx="6" cy="4" r="3" fill="#2e8b2e"/>` },
+  bobine: { vb: "0 0 50 40", w: 34, h: 27, svg: `
+    <rect x="4" y="8" width="42" height="24" rx="3" fill="#fff" stroke="#333" stroke-width="2"/>
+    ${[12, 19, 26, 33, 40].map(x => `<line x1="${x}" y1="8" x2="${x}" y2="32" stroke="#7b3fa0" stroke-width="1.6"/>`).join("")}` },
+  baes: { vb: "0 0 50 40", w: 34, h: 27, svg: `
+    <rect x="4" y="4" width="42" height="26" rx="3" fill="#1a1a1a" stroke="#333" stroke-width="1.5"/>
+    <path d="M25 8 L17 20 h6 l-2 10 12 -14 h-7 z" fill="#2ecc71"/>
+    <line x1="14" y1="34" x2="36" y2="34" stroke="#333" stroke-width="2"/>` },
+  "of-sd": { vb: "0 0 60 40", w: 42, h: 28, svg: `
+    <rect x="4" y="4" width="52" height="32" fill="none" stroke="#333" stroke-width="2"/>
+    <line x1="4" y1="4" x2="30" y2="36" stroke="#666" stroke-width="1.5"/>
+    <rect x="30" y="4" width="26" height="32" fill="#eaf3fc" stroke="#2f6fd1" stroke-width="1.5" transform="rotate(-25 43 20)"/>` },
+  "coffret-chantier": { vb: "0 0 60 60", w: 40, h: 40, svg: `
+    <rect x="6" y="10" width="48" height="44" rx="4" fill="#fce8b0" stroke="#8a6d00" stroke-width="2.5"/>
+    <circle cx="20" cy="34" r="7" fill="#fff" stroke="#333" stroke-width="1.5"/>
+    <circle cx="40" cy="34" r="7" fill="#fff" stroke="#333" stroke-width="1.5"/>
+    <rect x="14" y="14" width="32" height="10" fill="#333"/>` }
 };
 
 function compIcon(type) {

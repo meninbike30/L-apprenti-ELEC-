@@ -19,7 +19,10 @@ const WIRE_ROLES = {
   bt:       { label: "Basse tension (12V)",           color: "#16a085" },
   pilote:   { label: "Fil pilote",                    color: "#d63384" },
   montee:   { label: "Commande Montée",               color: "#8e44ad" },
-  descente: { label: "Commande Descente",             color: "#d68910" }
+  descente: { label: "Commande Descente",             color: "#d68910" },
+  donnees:  { label: "Données (paire réseau)",        color: "#0e7c86" },
+  bus:      { label: "Bus domotique (2 fils)",        color: "#16697a" },
+  dc:       { label: "Courant continu DC (câble PV)", color: "#e67e22" }
 };
 
 const ATELIER_EXERCISES = [
@@ -605,6 +608,669 @@ const ATELIER_EXERCISES = [
       { from: "module.sortie", to: "lampe.ph", role: "retour" },
       { from: "module.p1", to: "poussoir.in", role: "commande" },
       { from: "poussoir.out", to: "module.p2", role: "commande" }
+    ]
+  },
+  {
+    id: "alarme-intrusion",
+    nom: "Montage Alarme intrusion",
+    difficulte: "Moyen",
+    description: "Raccorder un détecteur infrarouge et alimenter une centrale d'alarme sur un circuit dédié.",
+    canvasW: 900, canvasH: 260,
+    successTarget: "centrale",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 1.5,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 20, y: 20, w: 120, h: 54,
+        calibreOptions: [2, 10, 16], calibreCorrect: 2,
+        info: "La centrale d'alarme et ses périphériques (détecteurs, sirène) consomment très peu de courant : un circuit dédié protégé par un disjoncteur 2 A (1,5 mm²) est suffisant et recommandé pour l'isoler du reste de l'installation.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 120, h: 70,
+        info: "Le neutre est distribué au détecteur ET à la centrale via un bornier commun.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 145, network: true }, { id: "out1", label: "N1", x: 150, y: 128 }, { id: "out2", label: "N2", x: 150, y: 162 }] },
+      { id: "detecteur", type: "detecteur", family: "switch", label: "Détecteur infrarouge", x: 300, y: 20, w: 130, h: 90,
+        info: "Le détecteur infrarouge doit être alimenté en permanence (L/N) : il ne transmet un signal (S) à la centrale que lorsqu'il détecte un mouvement dans son champ de détection (protection volumétrique).",
+        terminals: [{ id: "l", label: "L", x: 300, y: 50 }, { id: "n", label: "N", x: 300, y: 95 }, { id: "s", label: "S", x: 450, y: 50 }] },
+      { id: "centrale", type: "alarme", family: "receiver", label: "Centrale d'alarme", x: 600, y: 20, w: 150, h: 130,
+        info: "La centrale reçoit l'alimentation secteur (L/N) et surveille en permanence les zones raccordées aux détecteurs. Selon la règle APSAD R81, elle doit aussi intégrer une autoprotection (AP) contre le sabotage.",
+        terminals: [{ id: "l", label: "L", x: 600, y: 50 }, { id: "n", label: "N", x: 600, y: 90 }, { id: "zone", label: "Zone", x: 600, y: 130 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "detecteur.l", role: "phase" },
+      { from: "bn.out1", to: "detecteur.n", role: "neutre" },
+      { from: "disj.out", to: "centrale.l", role: "phase" },
+      { from: "bn.out2", to: "centrale.n", role: "neutre" },
+      { from: "detecteur.s", to: "centrale.zone", role: "commande" }
+    ]
+  },
+  {
+    id: "controle-acces",
+    nom: "Montage Contrôle d'accès",
+    difficulte: "Moyen",
+    description: "Raccorder un lecteur de badge qui déverrouille une gâche électrique.",
+    canvasW: 900, canvasH: 260,
+    successTarget: "gache",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 1.5,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 20, y: 20, w: 120, h: 54,
+        calibreOptions: [2, 10, 16], calibreCorrect: 2,
+        info: "Le lecteur de badge et la gâche électrique consomment peu de courant : un circuit dédié protégé par un disjoncteur 2 A (1,5 mm²) suffit, indépendant du circuit d'éclairage ou de prises.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 120, h: 70,
+        info: "Le neutre est distribué au lecteur ET à la gâche via un bornier commun.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 145, network: true }, { id: "out1", label: "N1", x: 150, y: 128 }, { id: "out2", label: "N2", x: 150, y: 162 }] },
+      { id: "lecteur", type: "controle-acces", family: "switch", label: "Lecteur de badge", x: 300, y: 20, w: 130, h: 90,
+        info: "Le lecteur de badge (RFID) ou le clavier à code vérifie l'autorisation de la personne puis transmet une impulsion de déverrouillage vers la gâche électrique.",
+        terminals: [{ id: "l", label: "L", x: 300, y: 50 }, { id: "n", label: "N", x: 300, y: 95 }, { id: "out", label: "Sortie", x: 450, y: 50 }] },
+      { id: "gache", type: "gache", family: "receiver", label: "Gâche électrique", x: 600, y: 20, w: 150, h: 100,
+        info: "La gâche électrique déverrouille le pêne de la porte lorsqu'elle est alimentée. Une diode de roue libre (en continu) ou une varistance (en alternatif) doit être placée en parallèle de la bobine pour absorber la surtension à la coupure et protéger le circuit de commande.",
+        terminals: [{ id: "in1", label: "1", x: 600, y: 50 }, { id: "in2", label: "2", x: 600, y: 90 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "lecteur.l", role: "phase" },
+      { from: "bn.out1", to: "lecteur.n", role: "neutre" },
+      { from: "lecteur.out", to: "gache.in1", role: "commande" },
+      { from: "bn.out2", to: "gache.in2", role: "neutre" }
+    ]
+  },
+  {
+    id: "portail-battant",
+    nom: "Montage Portail battant motorisé",
+    difficulte: "Difficile",
+    description: "Alimenter un moteur de portail battant et raccorder ses cellules photoélectriques de sécurité.",
+    canvasW: 940, canvasH: 280,
+    successTarget: "moteur",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 2.5,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 20, y: 20, w: 120, h: 54,
+        calibreOptions: [10, 16, 20], calibreCorrect: 16,
+        info: "La motorisation d'un portail battant (bras articulés ou vérins) est plus puissante qu'un simple éclairage : elle est protégée par un disjoncteur 16 A (câble 2,5 mm²), voire 20 A selon la puissance du moteur.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 120, h: 70,
+        info: "Le neutre est distribué au moteur ET aux cellules via un bornier commun.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 145, network: true }, { id: "out1", label: "N1", x: 150, y: 128 }, { id: "out2", label: "N2", x: 150, y: 162 }] },
+      { id: "bt", type: "bornier-terre", family: "source", label: "Bornier Terre", x: 20, y: 210, w: 120, h: 54,
+        info: "Le châssis métallique du moteur doit être relié à la terre pour la sécurité des personnes.",
+        terminals: [{ id: "in", label: "Réseau T", x: 20, y: 237, network: true }, { id: "out", label: "T", x: 150, y: 237 }] },
+      { id: "cellule", type: "cellule", family: "switch", label: "Cellules photoélectriques", x: 300, y: 20, w: 130, h: 90,
+        info: "Les cellules photoélectriques détectent un obstacle sur la trajectoire du portail. Exigées par la norme EN 12453 en fonctionnement automatique, elles coupent ou inversent le mouvement en cas de coupure du faisceau.",
+        terminals: [{ id: "l", label: "L", x: 300, y: 50 }, { id: "n", label: "N", x: 300, y: 95 }, { id: "out", label: "Sortie", x: 450, y: 50 }] },
+      { id: "moteur", type: "portail", family: "receiver", label: "Moteur portail battant", x: 600, y: 20, w: 160, h: 140,
+        info: "Le moteur du portail battant reçoit son alimentation (L/N/T) et une entrée de commande (cmd) reliée aux dispositifs de sécurité. En cas de défaillance de ces dispositifs, le portail doit se mettre en sécurité conformément à la norme EN 12453.",
+        terminals: [{ id: "l", label: "L", x: 600, y: 50 }, { id: "n", label: "N", x: 600, y: 90 }, { id: "terre", label: "T", x: 600, y: 130 }, { id: "cmd", label: "Cmd", x: 760, y: 50 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "moteur.l", role: "phase" },
+      { from: "bn.out1", to: "moteur.n", role: "neutre" },
+      { from: "bt.out", to: "moteur.terre", role: "terre" },
+      { from: "disj.out", to: "cellule.l", role: "phase" },
+      { from: "bn.out2", to: "cellule.n", role: "neutre" },
+      { from: "cellule.out", to: "moteur.cmd", role: "commande" }
+    ]
+  },
+  {
+    id: "portail-coulissant",
+    nom: "Montage Portail coulissant motorisé",
+    difficulte: "Difficile",
+    description: "Alimenter un motoréducteur à crémaillère, ses cellules de sécurité et un feu clignotant.",
+    canvasW: 940, canvasH: 280,
+    successTarget: "moteur",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 1.5,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 20, y: 20, w: 120, h: 54,
+        calibreOptions: [10, 16, 20], calibreCorrect: 10,
+        info: "Le motoréducteur d'un portail coulissant entraîne une crémaillère fixée sur le portail. Un disjoncteur 10 A (câble 1,5 mm²) est courant pour les modèles résidentiels légers ; vérifier la notice du fabricant pour les portails plus lourds.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 120, h: 54,
+        info: "Le neutre est distribué au moteur, aux cellules et au feu clignotant via un bornier commun.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 137, network: true }, { id: "out", label: "N", x: 150, y: 137 }] },
+      { id: "bt", type: "bornier-terre", family: "source", label: "Bornier Terre", x: 20, y: 190, w: 120, h: 54,
+        info: "Le châssis métallique du motoréducteur, fixé solidement au sol, doit être relié à la terre.",
+        terminals: [{ id: "in", label: "Réseau T", x: 20, y: 217, network: true }, { id: "out", label: "T", x: 150, y: 217 }] },
+      { id: "cellule", type: "cellule", family: "switch", label: "Cellules photoélectriques", x: 300, y: 20, w: 130, h: 90,
+        info: "Les cellules photoélectriques détectent un obstacle sur la trajectoire du portail, conformément à la norme EN 12453.",
+        terminals: [{ id: "l", label: "L", x: 300, y: 50 }, { id: "n", label: "N", x: 300, y: 95 }, { id: "out", label: "Sortie", x: 450, y: 50 }] },
+      { id: "feu", type: "lampe", family: "receiver", label: "Feu clignotant", x: 300, y: 160, w: 120, h: 80,
+        info: "Bien que non exigé par la réglementation française pour un usage privatif, le feu clignotant est fortement recommandé pour signaler le mouvement du portail, notamment lorsque celui-ci ouvre sur la voie publique.",
+        terminals: [{ id: "ph", label: "Ph", x: 300, y: 180 }, { id: "n", label: "N", x: 300, y: 218 }] },
+      { id: "moteur", type: "portail", family: "receiver", label: "Motoréducteur + crémaillère", x: 600, y: 20, w: 160, h: 140,
+        info: "Le motoréducteur est fixé solidement au sol ou sur un châssis métallique, à bonne hauteur par rapport à la crémaillère fixée sur le portail. Il reçoit son alimentation (L/N/T) et une entrée de commande (cmd) reliée aux dispositifs de sécurité.",
+        terminals: [{ id: "l", label: "L", x: 600, y: 50 }, { id: "n", label: "N", x: 600, y: 90 }, { id: "terre", label: "T", x: 600, y: 130 }, { id: "cmd", label: "Cmd", x: 760, y: 50 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "moteur.l", role: "phase" },
+      { from: "bn.out", to: "moteur.n", role: "neutre" },
+      { from: "bt.out", to: "moteur.terre", role: "terre" },
+      { from: "disj.out", to: "cellule.l", role: "phase" },
+      { from: "bn.out", to: "cellule.n", role: "neutre" },
+      { from: "cellule.out", to: "moteur.cmd", role: "commande" },
+      { from: "disj.out", to: "feu.ph", role: "phase" },
+      { from: "bn.out", to: "feu.n", role: "neutre" }
+    ]
+  },
+  {
+    id: "porte-garage",
+    nom: "Montage Porte de garage motorisée",
+    difficulte: "Moyen",
+    description: "Alimenter un moteur de porte de garage et raccorder un bouton poussoir de commande intérieure.",
+    canvasW: 940, canvasH: 260,
+    successTarget: "moteur",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 2.5,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 20, y: 20, w: 120, h: 54,
+        calibreOptions: [10, 16, 20], calibreCorrect: 16,
+        info: "Le moteur d'une porte de garage sectionnelle ou basculante est protégé par un disjoncteur 16 A (câble 2,5 mm²), adapté à la puissance courante de ces motorisations.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 120, h: 54,
+        info: "Le neutre est distribué au moteur via un bornier commun.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 137, network: true }, { id: "out", label: "N", x: 150, y: 137 }] },
+      { id: "bt", type: "bornier-terre", family: "source", label: "Bornier Terre", x: 20, y: 180, w: 120, h: 54,
+        info: "Le châssis métallique du moteur doit être relié à la terre.",
+        terminals: [{ id: "in", label: "Réseau T", x: 20, y: 207, network: true }, { id: "out", label: "T", x: 150, y: 207 }] },
+      { id: "bp", type: "bouton-poussoir", family: "switch", label: "Bouton poussoir intérieur", x: 300, y: 20, w: 120, h: 54,
+        info: "Un bouton poussoir intérieur permet de commander l'ouverture/fermeture depuis le garage, en complément de la télécommande.",
+        terminals: [{ id: "in", label: "E", x: 300, y: 47 }, { id: "out", label: "S", x: 420, y: 47 }] },
+      { id: "moteur", type: "garage", family: "receiver", label: "Moteur porte de garage", x: 600, y: 20, w: 160, h: 140,
+        info: "Avant toute installation, il faut vérifier la hauteur sous linteau disponible, le bon fonctionnement manuel de la porte et prévoir un déverrouillage extérieur si la porte est le seul accès au garage.",
+        terminals: [{ id: "l", label: "L", x: 600, y: 50 }, { id: "n", label: "N", x: 600, y: 90 }, { id: "terre", label: "T", x: 600, y: 130 }, { id: "cmd", label: "Cmd", x: 760, y: 50 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "moteur.l", role: "phase" },
+      { from: "bn.out", to: "moteur.n", role: "neutre" },
+      { from: "bt.out", to: "moteur.terre", role: "terre" },
+      { from: "disj.out", to: "bp.in", role: "commande" },
+      { from: "bp.out", to: "moteur.cmd", role: "commande" }
+    ]
+  },
+  {
+    id: "cablage-rj45",
+    nom: "Montage Câblage RJ45",
+    difficulte: "Facile",
+    description: "Raccorder la terre du coffret de communication et la liaison données vers une prise RJ45 murale.",
+    canvasW: 780, canvasH: 220,
+    successTarget: "prise",
+    components: [
+      { id: "bt", type: "bornier-terre", family: "source", label: "Bornier Terre", x: 20, y: 70, w: 130, h: 54,
+        info: "Le conducteur de terre du coffret VDI (tableau de communication) doit être relié à une borne de terre accessible à moins de 50 cm de l'origine de la GTL, avec une liaison de section 6 mm² minimum selon la NF C 15-100.",
+        terminals: [{ id: "in", label: "Réseau T", x: 20, y: 97, network: true }, { id: "out", label: "T", x: 150, y: 97 }] },
+      { id: "coffret", type: "coffret-vdi", family: "source", label: "Coffret de communication", x: 350, y: 20, w: 150, h: 130,
+        info: "Le coffret de communication centralise les arrivées réseau et distribue les prises RJ45 du logement. Il regroupe le câblage selon un Grade (1 à 4, classification UTE française) conforme à la NF EN 50174.",
+        terminals: [{ id: "terre_in", label: "T", x: 350, y: 50 }, { id: "data_out", label: "Données", x: 500, y: 90 }] },
+      { id: "prise", type: "rj45", family: "receiver", label: "Prise RJ45 murale", x: 650, y: 60, w: 120, h: 80,
+        info: "Une prise RJ45 murale ne transporte aucun courant électrique fort : elle véhicule uniquement un signal de données, câblé selon le brochage normalisé T568A ou T568B.",
+        terminals: [{ id: "data", label: "Données", x: 650, y: 100 }] }
+    ],
+    connections: [
+      { from: "bt.out", to: "coffret.terre_in", role: "terre" },
+      { from: "coffret.data_out", to: "prise.data", role: "donnees" }
+    ]
+  },
+  {
+    id: "tableau-communication",
+    nom: "Montage Tableau de communication (VDI)",
+    difficulte: "Facile",
+    description: "Alimenter le coffret de communication et raccorder sa borne de terre selon la NF C 15-100.",
+    canvasW: 900, canvasH: 260,
+    successTarget: "coffret",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 6,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 20, y: 20, w: 120, h: 54,
+        calibreOptions: [10, 16, 20], calibreCorrect: 16,
+        info: "Le coffret de communication (VDI) alimente les équipements actifs du réseau (box, switch...) : un circuit dédié protégé par un disjoncteur 16 A (câble 2,5 mm²) est courant.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 120, h: 54,
+        info: "Le neutre est distribué au coffret via un bornier commun.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 137, network: true }, { id: "out", label: "N", x: 150, y: 137 }] },
+      { id: "bt", type: "bornier-terre", family: "source", label: "Bornier Terre", x: 20, y: 180, w: 120, h: 54,
+        info: "La borne de terre du tableau de communication doit être accessible à moins de 50 cm de l'origine de la GTL, reliée par un conducteur de 6 mm² minimum (NF C 15-100).",
+        terminals: [{ id: "in", label: "Réseau T", x: 20, y: 207, network: true }, { id: "out", label: "T", x: 150, y: 207 }] },
+      { id: "coffret", type: "coffret-vdi", family: "receiver", label: "Coffret de communication", x: 600, y: 20, w: 160, h: 140,
+        info: "Le tableau de communication est le plus souvent regroupé avec le tableau électrique dans la Gaine Technique Logement (GTL).",
+        terminals: [{ id: "ph", label: "Ph", x: 600, y: 50 }, { id: "n", label: "N", x: 600, y: 90 }, { id: "terre", label: "T", x: 600, y: 130 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "coffret.ph", role: "phase" },
+      { from: "bn.out", to: "coffret.n", role: "neutre" },
+      { from: "bt.out", to: "coffret.terre", role: "terre" }
+    ]
+  },
+  {
+    id: "domotique",
+    nom: "Montage Passerelle domotique (bus)",
+    difficulte: "Moyen",
+    description: "Alimenter une passerelle domotique et raccorder un actionneur via un bus filaire 2 fils.",
+    canvasW: 940, canvasH: 260,
+    successTarget: "actionneur",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 1.5,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 20, y: 20, w: 120, h: 54,
+        calibreOptions: [10, 16], calibreCorrect: 10,
+        info: "La passerelle domotique (box centralisant les protocoles) est alimentée comme un petit appareil électronique : disjoncteur 10 A (1,5 mm²) dédié.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 120, h: 54,
+        info: "Le neutre est distribué à la passerelle via un bornier commun.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 137, network: true }, { id: "out", label: "N", x: 150, y: 137 }] },
+      { id: "passerelle", type: "domotique", family: "source", label: "Passerelle domotique", x: 300, y: 20, w: 150, h: 130,
+        info: "La passerelle domotique traduit les ordres entre différents protocoles (bus filaire type KNX, radio comme Zigbee/Z-Wave/X3D/IO-homecontrol, ou CPL) et pilote les actionneurs du logement.",
+        terminals: [{ id: "l", label: "L", x: 300, y: 50 }, { id: "n", label: "N", x: 300, y: 90 }, { id: "busA", label: "Bus A", x: 450, y: 50 }, { id: "busB", label: "Bus B", x: 450, y: 90 }] },
+      { id: "actionneur", type: "volet-roulant", family: "receiver", label: "Actionneur bus (volet)", x: 600, y: 20, w: 150, h: 130,
+        info: "Un actionneur raccordé au bus filaire (2 fils, non polarisés pour KNX) reçoit les ordres de la passerelle. Le bus KNX est limité à 1000 m de câble par ligne, avec un maximum de 350 m entre une alimentation et un composant.",
+        terminals: [{ id: "busA", label: "Bus A", x: 600, y: 50 }, { id: "busB", label: "Bus B", x: 600, y: 90 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "passerelle.l", role: "phase" },
+      { from: "bn.out", to: "passerelle.n", role: "neutre" },
+      { from: "passerelle.busA", to: "actionneur.busA", role: "bus" },
+      { from: "passerelle.busB", to: "actionneur.busB", role: "bus" }
+    ]
+  },
+  {
+    id: "gestion-energie",
+    nom: "Montage Gestion de l'énergie (délestage)",
+    difficulte: "Difficile",
+    description: "Raccorder un gestionnaire d'énergie qui pilote un contacteur pour délester un chauffe-eau.",
+    canvasW: 1000, canvasH: 280,
+    successTarget: "gestionnaire",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 2.5,
+    components: [
+      { id: "disjcmd", type: "disjoncteur", family: "source", label: "Disjoncteur commande", x: 20, y: 20, w: 130, h: 54,
+        calibreOptions: [2, 10, 16], calibreCorrect: 2,
+        info: "Le gestionnaire d'énergie, comme tout dispositif de commande basse consommation, est protégé par un disjoncteur dédié 2 A (1,5 mm²), séparé du circuit de puissance qu'il pilote.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 130, h: 70,
+        info: "Le neutre est distribué au gestionnaire ET à la bobine du contacteur via un bornier commun.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 145, network: true }, { id: "out1", label: "N1", x: 150, y: 128 }, { id: "out2", label: "N2", x: 150, y: 162 }] },
+      { id: "gestionnaire", type: "compteur", family: "source", label: "Gestionnaire d'énergie", x: 300, y: 20, w: 160, h: 70,
+        info: "Le gestionnaire d'énergie mesure la puissance appelée sur l'installation et pilote le délestage : il coupe temporairement les circuits non prioritaires (comme le chauffe-eau) pour éviter un dépassement de la puissance souscrite.",
+        terminals: [{ id: "l", label: "L", x: 300, y: 50 }, { id: "n", label: "N", x: 300, y: 85 }, { id: "sortie", label: "Sortie", x: 460, y: 50 }] },
+      { id: "disjP", type: "disjoncteur", family: "source", label: "Disjoncteur puissance", x: 300, y: 150, w: 150, h: 54,
+        calibreOptions: [16, 20, 32], calibreCorrect: 20,
+        info: "Le circuit de puissance du chauffe-eau (délestable) est protégé indépendamment du circuit de commande du gestionnaire.",
+        terminals: [{ id: "in", label: "Réseau", x: 300, y: 177, network: true }, { id: "out", label: "Sortie", x: 450, y: 177 }] },
+      { id: "contacteur", type: "contacteur", family: "relay", label: "Contacteur de délestage", x: 560, y: 70, w: 150, h: 130,
+        info: "A1/A2 = bobine pilotée par la sortie du gestionnaire d'énergie. 1/2 = contact de puissance qui alimente le chauffe-eau, coupé en cas de délestage.",
+        terminals: [{ id: "a1", label: "A1", x: 560, y: 100 }, { id: "a2", label: "A2", x: 560, y: 160 }, { id: "one", label: "1", x: 710, y: 100 }, { id: "two", label: "2", x: 710, y: 160 }] },
+      { id: "chauffeeau", type: "chauffe-eau", family: "receiver", label: "Chauffe-eau (délestable)", x: 790, y: 20, w: 120, h: 80,
+        terminals: [{ id: "ph", label: "Ph", x: 790, y: 40 }, { id: "n", label: "N", x: 790, y: 78 }] }
+    ],
+    connections: [
+      { from: "disjcmd.out", to: "gestionnaire.l", role: "phase" },
+      { from: "bn.out1", to: "gestionnaire.n", role: "neutre" },
+      { from: "gestionnaire.sortie", to: "contacteur.a1", role: "commande" },
+      { from: "bn.out2", to: "contacteur.a2", role: "neutre" },
+      { from: "disjP.out", to: "contacteur.one", role: "phase" },
+      { from: "contacteur.two", to: "chauffeeau.ph", role: "retour" },
+      { from: "bn.out1", to: "chauffeeau.n", role: "neutre" }
+    ]
+  },
+  {
+    id: "irve",
+    nom: "Montage Borne de recharge IRVE",
+    difficulte: "Difficile",
+    description: "Raccorder une borne de recharge véhicule électrique sur un circuit dédié avec différentiel adapté.",
+    canvasW: 940, canvasH: 260,
+    successTarget: "borne",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 6,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 20, y: 20, w: 130, h: 54,
+        calibreOptions: [16, 20, 32], calibreCorrect: 32,
+        info: "Une borne de recharge IRVE nécessite un circuit dédié : pour une recharge en mode 3 (7 kVA monophasé), un disjoncteur 32 A avec un câble de 6 mm² est courant, à confirmer selon la puissance de la borne installée.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 130, h: 54,
+        info: "Le neutre général alimente le dispositif différentiel avant raccordement à la borne.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 137, network: true }, { id: "out", label: "N", x: 150, y: 137 }] },
+      { id: "bt", type: "bornier-terre", family: "source", label: "Bornier Terre", x: 20, y: 180, w: 130, h: 54,
+        info: "La mise à la terre de la borne IRVE est obligatoire, comme pour tout équipement de classe I.",
+        terminals: [{ id: "in", label: "Réseau T", x: 20, y: 207, network: true }, { id: "out", label: "T", x: 150, y: 207 }] },
+      { id: "diff", type: "differentiel", family: "source", label: "Différentiel dédié IRVE", x: 300, y: 60, w: 150, h: 100,
+        info: "Une installation IRVE nécessite un dispositif différentiel adapté à la détection des courants de fuite continus générés par la recharge (type A ou F selon la borne, parfois complété d'une détection type B intégrée à la borne).",
+        terminals: [{ id: "in_ph", label: "Ph entrée", x: 300, y: 90 }, { id: "in_n", label: "N entrée", x: 300, y: 130 }, { id: "out_ph", label: "Ph sortie", x: 450, y: 90 }, { id: "out_n", label: "N sortie", x: 450, y: 130 }] },
+      { id: "borne", type: "irve", family: "receiver", label: "Borne de recharge", x: 620, y: 20, w: 150, h: 140,
+        terminals: [{ id: "ph", label: "Ph", x: 620, y: 90 }, { id: "n", label: "N", x: 620, y: 130 }, { id: "terre", label: "T", x: 620, y: 50 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "diff.in_ph", role: "phase" },
+      { from: "bn.out", to: "diff.in_n", role: "neutre" },
+      { from: "diff.out_ph", to: "borne.ph", role: "phase" },
+      { from: "diff.out_n", to: "borne.n", role: "neutre" },
+      { from: "bt.out", to: "borne.terre", role: "terre" }
+    ]
+  },
+  {
+    id: "photovoltaique",
+    nom: "Montage Installation photovoltaïque",
+    difficulte: "Difficile",
+    description: "Raccorder un module photovoltaïque à un onduleur, puis l'onduleur au réseau via son disjoncteur AC dédié.",
+    canvasW: 1020, canvasH: 280,
+    successTarget: "onduleur",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 2.5,
+    components: [
+      { id: "module", type: "photovoltaique", family: "source", label: "Module photovoltaïque", x: 20, y: 20, w: 150, h: 110,
+        info: "Sous les conditions STC (1000 W/m², 25°C), le module délivre sa puissance crête (Pmpp) sous une tension Umpp et un courant Impp. Les valeurs Icc (courant de court-circuit) et Vco (tension à vide) servent à dimensionner les protections et le câble PV1000-F, raccordé via des connecteurs étanches MC4.",
+        terminals: [{ id: "dcplus", label: "DC+", x: 170, y: 50 }, { id: "dcminus", label: "DC-", x: 170, y: 95 }] },
+      { id: "onduleur", type: "onduleur", family: "relay", label: "Onduleur", x: 350, y: 20, w: 160, h: 140,
+        info: "L'onduleur convertit le courant continu (DC) produit par les modules en courant alternatif (AC) compatible avec le réseau. Son boîtier métallique doit être relié à la terre.",
+        terminals: [{ id: "dcplus", label: "DC+", x: 350, y: 50 }, { id: "dcminus", label: "DC-", x: 350, y: 90 }, { id: "terre", label: "T", x: 350, y: 130 }, { id: "acph", label: "AC Ph", x: 510, y: 50 }, { id: "acn", label: "AC N", x: 510, y: 90 }] },
+      { id: "bt", type: "bornier-terre", family: "source", label: "Bornier Terre", x: 350, y: 190, w: 160, h: 54,
+        info: "Le châssis de l'onduleur, comme celui des structures métalliques des modules, doit être mis à la terre.",
+        terminals: [{ id: "in", label: "Réseau T", x: 350, y: 217, network: true }, { id: "out", label: "T", x: 510, y: 217 }] },
+      { id: "disjAC", type: "disjoncteur", family: "source", label: "Disjoncteur AC onduleur", x: 650, y: 20, w: 150, h: 54,
+        calibreOptions: [16, 20, 32], calibreCorrect: 20,
+        info: "La sortie alternative de l'onduleur est protégée par un disjoncteur dédié (couramment 20 A pour une installation résidentielle), avant raccordement au compteur de production.",
+        terminals: [{ id: "in", label: "Entrée", x: 650, y: 47 }, { id: "out", label: "Sortie", x: 800, y: 47 }] },
+      { id: "compteurExport", type: "compteur", family: "receiver", label: "Compteur de production", x: 870, y: 20, w: 140, h: 60,
+        terminals: [{ id: "ph", label: "Ph", x: 870, y: 40 }, { id: "n", label: "N", x: 870, y: 65 }] }
+    ],
+    connections: [
+      { from: "module.dcplus", to: "onduleur.dcplus", role: "dc" },
+      { from: "module.dcminus", to: "onduleur.dcminus", role: "dc" },
+      { from: "bt.out", to: "onduleur.terre", role: "terre" },
+      { from: "onduleur.acph", to: "disjAC.in", role: "phase" },
+      { from: "disjAC.out", to: "compteurExport.ph", role: "phase" },
+      { from: "onduleur.acn", to: "compteurExport.n", role: "neutre" }
+    ]
+  },
+  {
+    id: "tgbt",
+    nom: "Montage Tableau Général Basse Tension (TGBT)",
+    difficulte: "Difficile",
+    description: "Câbler l'AGCP en tête d'installation puis répartir vers deux armoires divisionnaires distinctes.",
+    canvasW: 860, canvasH: 300,
+    successTarget: "armoireA",
+    sectionOptions: [6, 10, 16],
+    sectionCorrect: 16,
+    components: [
+      { id: "agcp", type: "disjoncteur", family: "source", label: "AGCP (disjoncteur de tête)", x: 20, y: 20, w: 150, h: 54,
+        calibreOptions: [30, 45, 60, 100], calibreCorrect: 60,
+        info: "Le TGBT (Tableau Général Basse Tension) regroupe l'arrivée générale (AGCP) et répartit l'énergie vers plusieurs armoires divisionnaires, chacune desservant une zone ou un usage du bâtiment (immeuble collectif, tertiaire...).",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 170, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 150, h: 70,
+        info: "Le neutre général est réparti vers chaque armoire divisionnaire via un bornier commun (peigne de neutre).",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 145, network: true }, { id: "out1", label: "N1", x: 170, y: 128 }, { id: "out2", label: "N2", x: 170, y: 162 }] },
+      { id: "bt", type: "bornier-terre", family: "source", label: "Bornier Terre", x: 20, y: 210, w: 150, h: 70,
+        info: "Chaque armoire divisionnaire reçoit également son propre départ de terre depuis la borne principale de terre du TGBT.",
+        terminals: [{ id: "in", label: "Réseau T", x: 20, y: 245, network: true }, { id: "out1", label: "T1", x: 170, y: 228 }, { id: "out2", label: "T2", x: 170, y: 262 }] },
+      { id: "armoireA", type: "tgbt", family: "receiver", label: "Armoire divisionnaire A", x: 420, y: 20, w: 150, h: 140,
+        info: "Chaque armoire divisionnaire reçoit un départ protégé (phase, neutre, terre) depuis le TGBT, et contiendra à son tour ses propres disjoncteurs pour les circuits terminaux.",
+        terminals: [{ id: "ph", label: "Ph", x: 420, y: 50 }, { id: "n", label: "N", x: 420, y: 90 }, { id: "terre", label: "T", x: 420, y: 130 }] },
+      { id: "armoireB", type: "tgbt", family: "receiver", label: "Armoire divisionnaire B", x: 650, y: 20, w: 150, h: 140,
+        terminals: [{ id: "ph", label: "Ph", x: 650, y: 50 }, { id: "n", label: "N", x: 650, y: 90 }, { id: "terre", label: "T", x: 650, y: 130 }] }
+    ],
+    connections: [
+      { from: "agcp.out", to: "armoireA.ph", role: "phase" },
+      { from: "agcp.out", to: "armoireB.ph", role: "phase" },
+      { from: "bn.out1", to: "armoireA.n", role: "neutre" },
+      { from: "bn.out2", to: "armoireB.n", role: "neutre" },
+      { from: "bt.out1", to: "armoireA.terre", role: "terre" },
+      { from: "bt.out2", to: "armoireB.terre", role: "terre" }
+    ]
+  },
+  {
+    id: "fusible",
+    nom: "Montage circuit protégé par fusible",
+    difficulte: "Facile",
+    description: "Protéger un circuit d'éclairage par un porte-fusible à cartouche plutôt que par un disjoncteur.",
+    canvasW: 780, canvasH: 220,
+    successTarget: "lampe",
+    sectionOptions: [1.5, 2.5],
+    sectionCorrect: 1.5,
+    components: [
+      { id: "pf", type: "fusible", family: "source", label: "Porte-fusible", x: 20, y: 20, w: 150, h: 54,
+        calibreOptions: [2, 4, 6, 10], calibreCorrect: 6,
+        info: "Le fusible protège le circuit contre les surintensités par la fusion d'un fil calibré à l'intérieur d'une cartouche (type gG). Contrairement au disjoncteur, il doit être remplacé après chaque déclenchement et ne peut pas être réarmé.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 170, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 150, h: 54,
+        info: "Le neutre est distribué au récepteur via un bornier commun, comme pour un circuit classique.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 137, network: true }, { id: "out", label: "N", x: 170, y: 137 }] },
+      { id: "lampe", type: "lampe", family: "receiver", label: "Point lumineux", x: 480, y: 40, w: 120, h: 80,
+        terminals: [{ id: "ph", label: "Ph", x: 480, y: 60 }, { id: "n", label: "N", x: 480, y: 98 }] }
+    ],
+    connections: [
+      { from: "pf.out", to: "lampe.ph", role: "phase" },
+      { from: "bn.out", to: "lampe.n", role: "neutre" }
+    ]
+  },
+  {
+    id: "parafoudre",
+    nom: "Montage d'un parafoudre en tête d'installation",
+    difficulte: "Moyen",
+    description: "Installer un parafoudre en dérivation, protégé par son propre disjoncteur, pour protéger l'installation contre les surtensions.",
+    canvasW: 940, canvasH: 260,
+    successTarget: "parafoudre",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 1.5,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur général", x: 20, y: 20, w: 140, h: 54,
+        calibreOptions: [30, 45, 60], calibreCorrect: 30,
+        info: "Le disjoncteur général alimente aussi le circuit dédié à la protection contre les surtensions.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 170, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 140, h: 54,
+        info: "Le neutre est distribué directement au parafoudre via un bornier commun.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 137, network: true }, { id: "out", label: "N", x: 170, y: 137 }] },
+      { id: "bt", type: "bornier-terre", family: "source", label: "Bornier Terre", x: 20, y: 180, w: 140, h: 54,
+        info: "Le parafoudre écoule les surtensions vers la terre : sa mise à la terre est indispensable à son fonctionnement.",
+        terminals: [{ id: "in", label: "Réseau T", x: 20, y: 207, network: true }, { id: "out", label: "T", x: 170, y: 207 }] },
+      { id: "disjPF", type: "disjoncteur", family: "source", label: "Disjoncteur dédié parafoudre", x: 330, y: 20, w: 150, h: 54,
+        calibreOptions: [2, 4, 10], calibreCorrect: 4,
+        info: "Le parafoudre doit être protégé par son propre disjoncteur, de faible calibre (souvent 2 ou 4 A), placé juste avant lui.",
+        terminals: [{ id: "in", label: "Entrée", x: 330, y: 47 }, { id: "out", label: "Sortie", x: 480, y: 47 }] },
+      { id: "parafoudre", type: "parafoudre", family: "receiver", label: "Parafoudre", x: 630, y: 20, w: 150, h: 140,
+        info: "Le parafoudre est installé en dérivation (en parallèle) entre phase, neutre et terre. Il écoule les surtensions (dues à la foudre ou aux manœuvres du réseau) vers la terre. Un voyant indique sa fin de vie lorsqu'il doit être remplacé.",
+        terminals: [{ id: "ph", label: "Ph", x: 630, y: 50 }, { id: "n", label: "N", x: 630, y: 90 }, { id: "terre", label: "T", x: 630, y: 130 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "disjPF.in", role: "phase" },
+      { from: "disjPF.out", to: "parafoudre.ph", role: "phase" },
+      { from: "bn.out", to: "parafoudre.n", role: "neutre" },
+      { from: "bt.out", to: "parafoudre.terre", role: "terre" }
+    ]
+  },
+  {
+    id: "prise-terre",
+    nom: "Réalisation d'une prise de terre",
+    difficulte: "Facile",
+    description: "Raccorder le piquet de terre à la borne principale de terre, puis répartir vers le tableau électrique.",
+    canvasW: 780, canvasH: 220,
+    successTarget: "tableau",
+    sectionOptions: [16, 25, 35],
+    sectionCorrect: 25,
+    components: [
+      { id: "piquet", type: "piquet-terre", family: "source", label: "Piquet de terre", x: 20, y: 60, w: 130, h: 100,
+        info: "Le piquet de terre (ou boucle à fond de fouille) constitue la prise de terre proprement dite : il assure le contact électrique avec le sol. Sa valeur de résistance doit être suffisamment faible pour permettre le déclenchement des dispositifs différentiels en cas de défaut.",
+        terminals: [{ id: "out", label: "Vers terre", x: 150, y: 100 }] },
+      { id: "bpt", type: "bornier-terre", family: "source", label: "Borne Principale de Terre", x: 320, y: 60, w: 160, h: 70,
+        info: "La Borne Principale de Terre (barrette de terre) centralise tous les conducteurs de protection de l'installation. Le conducteur principal de terre qui la relie à la prise de terre a une section d'au moins 25 mm² (cuivre), non protégée mais mécaniquement protégée.",
+        terminals: [{ id: "in", label: "Entrée", x: 320, y: 95 }, { id: "out", label: "Sortie", x: 480, y: 95 }] },
+      { id: "tableau", type: "tgbt", family: "receiver", label: "Vers le tableau électrique", x: 580, y: 40, w: 150, h: 110,
+        terminals: [{ id: "terre", label: "T", x: 580, y: 95 }] }
+    ],
+    connections: [
+      { from: "piquet.out", to: "bpt.in", role: "terre" },
+      { from: "bpt.out", to: "tableau.terre", role: "terre" }
+    ]
+  },
+  {
+    id: "double-allumage",
+    nom: "Montage Double Allumage",
+    difficulte: "Facile",
+    description: "Câbler un appareillage double allumage commandant deux points lumineux indépendants depuis un même emplacement.",
+    canvasW: 900, canvasH: 260,
+    successTarget: "lampe1",
+    sectionOptions: [1.5, 2.5],
+    sectionCorrect: 1.5,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 20, y: 20, w: 130, h: 54,
+        calibreOptions: [10, 16], calibreCorrect: 10,
+        info: "Le double allumage regroupe deux interrupteurs simple allumage dans un même appareillage : chacun commande indépendamment son propre point lumineux, pratique par exemple pour deux zones d'une même pièce.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 150, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 130, h: 70,
+        info: "Le neutre est distribué aux deux points lumineux via un bornier commun.",
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 145, network: true }, { id: "out1", label: "N1", x: 150, y: 128 }, { id: "out2", label: "N2", x: 150, y: 162 }] },
+      { id: "inter1", type: "interrupteur", family: "switch", label: "Interrupteur voie 1", x: 330, y: 20, w: 130, h: 54,
+        terminals: [{ id: "commun", label: "Commun", x: 330, y: 47 }, { id: "l1", label: "L1", x: 460, y: 47 }] },
+      { id: "inter2", type: "interrupteur", family: "switch", label: "Interrupteur voie 2", x: 330, y: 150, w: 130, h: 54,
+        terminals: [{ id: "commun", label: "Commun", x: 330, y: 177 }, { id: "l1", label: "L1", x: 460, y: 177 }] },
+      { id: "lampe1", type: "lampe", family: "receiver", label: "Point lumineux 1", x: 650, y: 10, w: 120, h: 80,
+        terminals: [{ id: "ph", label: "Ph", x: 650, y: 30 }, { id: "n", label: "N", x: 650, y: 68 }] },
+      { id: "lampe2", type: "lampe", family: "receiver", label: "Point lumineux 2", x: 650, y: 150, w: 120, h: 80,
+        terminals: [{ id: "ph", label: "Ph", x: 650, y: 170 }, { id: "n", label: "N", x: 650, y: 208 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "inter1.commun", role: "phase" },
+      { from: "disj.out", to: "inter2.commun", role: "phase" },
+      { from: "inter1.l1", to: "lampe1.ph", role: "retour" },
+      { from: "inter2.l1", to: "lampe2.ph", role: "retour" },
+      { from: "bn.out1", to: "lampe1.n", role: "neutre" },
+      { from: "bn.out2", to: "lampe2.n", role: "neutre" }
+    ]
+  },
+  {
+    id: "association-recepteurs",
+    nom: "Association de récepteurs en parallèle",
+    difficulte: "Facile",
+    description: "Câbler deux lampes en parallèle sur le même circuit, chacune recevant la pleine tension secteur.",
+    canvasW: 780, canvasH: 260,
+    successTarget: "lampe1",
+    sectionOptions: [1.5, 2.5],
+    sectionCorrect: 1.5,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur", x: 30, y: 30, w: 120, h: 54,
+        calibreOptions: [10, 16, 20], calibreCorrect: 16,
+        info: "En association parallèle, chaque récepteur reçoit directement la tension secteur (230 V) et fonctionne indépendamment des autres : si une lampe grille, l'autre continue de fonctionner normalement. C'est le mode d'association utilisé pour tous les circuits domestiques, contrairement au montage en série où la panne d'un récepteur coupe tout le circuit et où la tension se répartit entre les récepteurs.",
+        terminals: [{ id: "in", label: "Réseau", x: 30, y: 57, network: true }, { id: "out", label: "Sortie", x: 150, y: 57 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 30, y: 160, w: 120, h: 54,
+        terminals: [{ id: "in", label: "Réseau N", x: 30, y: 187, network: true }, { id: "out", label: "N", x: 150, y: 187 }] },
+      { id: "lampe1", type: "lampe", family: "receiver", label: "Lampe 1", x: 480, y: 20, w: 120, h: 80,
+        terminals: [{ id: "ph", label: "Ph", x: 480, y: 40 }, { id: "n", label: "N", x: 480, y: 78 }] },
+      { id: "lampe2", type: "lampe", family: "receiver", label: "Lampe 2", x: 480, y: 160, w: 120, h: 80,
+        terminals: [{ id: "ph", label: "Ph", x: 480, y: 180 }, { id: "n", label: "N", x: 480, y: 218 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "lampe1.ph", role: "phase" },
+      { from: "disj.out", to: "lampe2.ph", role: "phase" },
+      { from: "bn.out", to: "lampe1.n", role: "neutre" },
+      { from: "bn.out", to: "lampe2.n", role: "neutre" }
+    ]
+  },
+  {
+    id: "bobines-mn-mx",
+    nom: "Montage Bobines de déclenchement (MN et MX)",
+    difficulte: "Difficile",
+    description: "Câbler le circuit de commande d'un bloc déclencheur MX, actionné par un coup de poing d'arrêt d'urgence.",
+    canvasW: 900, canvasH: 260,
+    successTarget: "bobineMX",
+    sectionOptions: [1.5, 2.5],
+    sectionCorrect: 1.5,
+    components: [
+      { id: "disjAux", type: "disjoncteur", family: "source", label: "Disjoncteur circuit auxiliaire", x: 20, y: 20, w: 150, h: 54,
+        calibreOptions: [2, 4, 10], calibreCorrect: 2,
+        info: "Le circuit de commande de la bobine MX est un circuit auxiliaire de faible puissance, protégé par un disjoncteur dédié de faible calibre.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 170, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 150, h: 54,
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 137, network: true }, { id: "out", label: "N", x: 170, y: 137 }] },
+      { id: "bouton", type: "bouton-poussoir", family: "switch", label: "Coup de poing arrêt d'urgence", x: 330, y: 20, w: 150, h: 54,
+        info: "Le coup de poing d'arrêt d'urgence, en appui, applique la tension à la bobine MX pour provoquer l'ouverture immédiate du disjoncteur principal.",
+        terminals: [{ id: "in", label: "E", x: 330, y: 47 }, { id: "out", label: "S", x: 480, y: 47 }] },
+      { id: "bobineMX", type: "bobine", family: "relay", label: "Bobine MX (déclencheur à émission)", x: 630, y: 20, w: 160, h: 100,
+        info: "La bobine MX (déclencheur à émission de courant) est intégrée au disjoncteur principal : dès qu'elle est mise sous tension (par exemple via un coup de poing d'arrêt d'urgence), elle provoque immédiatement l'ouverture du disjoncteur. À l'inverse, une bobine MN (déclencheur à manque de tension) déclenche lorsque sa tension d'alimentation DISPARAÎT — elle est utilisée pour les arrêts de sécurité en cas de coupure secteur.",
+        terminals: [{ id: "l", label: "L", x: 630, y: 50 }, { id: "n", label: "N", x: 630, y: 90 }] }
+    ],
+    connections: [
+      { from: "disjAux.out", to: "bouton.in", role: "phase" },
+      { from: "bouton.out", to: "bobineMX.l", role: "commande" },
+      { from: "bn.out", to: "bobineMX.n", role: "neutre" }
+    ]
+  },
+  {
+    id: "baes",
+    nom: "Montage BAES (Bloc Autonome d'Éclairage de Sécurité)",
+    difficulte: "Moyen",
+    description: "Raccorder un BAES sur un circuit non protégé par un interrupteur, avec sa ligne de télécommande SATI.",
+    canvasW: 900, canvasH: 260,
+    successTarget: "baes",
+    sectionOptions: [1.5, 2.5],
+    sectionCorrect: 1.5,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur circuit BAES", x: 20, y: 20, w: 150, h: 54,
+        calibreOptions: [10, 16], calibreCorrect: 10,
+        info: "Le circuit alimentant les BAES ne doit être protégé par aucun autre dispositif de coupure que celui desservant l'ensemble de la ligne (pas d'interrupteur intermédiaire), afin que le bloc soit mis en charge en permanence.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 170, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 150, h: 54,
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 137, network: true }, { id: "out", label: "N", x: 170, y: 137 }] },
+      { id: "tc", type: "bornier", family: "source", label: "Ligne télécommande SATI", x: 20, y: 180, w: 150, h: 54,
+        info: "La ligne de télécommande (souvent en 12 V, protocole SATI) permet de mettre à l'état de repos, tester ou vérifier l'ensemble des BAES depuis un point centralisé, notamment dans les ERP (Établissements Recevant du Public).",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 207, network: true }, { id: "out", label: "Sortie", x: 170, y: 207 }] },
+      { id: "baes", type: "baes", family: "receiver", label: "BAES", x: 500, y: 20, w: 150, h: 140,
+        terminals: [{ id: "l", label: "L", x: 500, y: 50 }, { id: "n", label: "N", x: 500, y: 90 }, { id: "tc", label: "TC", x: 500, y: 130 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "baes.l", role: "phase" },
+      { from: "bn.out", to: "baes.n", role: "neutre" },
+      { from: "tc.out", to: "baes.tc", role: "bt" }
+    ]
+  },
+  {
+    id: "of-sd",
+    nom: "Montage OF-SD (Ouvrant de désenfumage)",
+    difficulte: "Difficile",
+    description: "Alimenter un ouvrant de désenfumage (OF-SD) motorisé, commandé par un déclencheur manuel (DM).",
+    canvasW: 860, canvasH: 240,
+    successTarget: "ofsd",
+    components: [
+      { id: "alim", type: "alim-24v", family: "source", label: "Alimentation 24V DC (SSI)", x: 20, y: 20, w: 150, h: 54,
+        info: "L'ouvrant de désenfumage (OF-SD) est un exutoire motorisé qui s'ouvre automatiquement en cas de détection de fumée (via un Système de Sécurité Incendie) ou sur commande d'un déclencheur manuel (DM), pour évacuer les fumées d'un local ou d'une cage d'escalier. Il est alimenté en très basse tension (24 V) et nécessite un réarmement manuel après chaque désenfumage.",
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "24V+", x: 170, y: 47 }] },
+      { id: "bnminus", type: "bornier", family: "source", label: "Retour 24V (-)", x: 20, y: 110, w: 150, h: 54,
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 137, network: true }, { id: "out", label: "24V-", x: 170, y: 137 }] },
+      { id: "dm", type: "bouton-poussoir", family: "switch", label: "Déclencheur manuel (DM)", x: 320, y: 20, w: 140, h: 54,
+        terminals: [{ id: "in", label: "E", x: 320, y: 47 }, { id: "out", label: "S", x: 460, y: 47 }] },
+      { id: "ofsd", type: "of-sd", family: "receiver", label: "Ouvrant de désenfumage motorisé", x: 600, y: 20, w: 160, h: 140,
+        terminals: [{ id: "in", label: "24V+", x: 600, y: 50 }, { id: "n", label: "24V-", x: 600, y: 90 }] }
+    ],
+    connections: [
+      { from: "alim.out", to: "dm.in", role: "bt" },
+      { from: "dm.out", to: "ofsd.in", role: "commande" },
+      { from: "bnminus.out", to: "ofsd.n", role: "bt" }
+    ]
+  },
+  {
+    id: "raccordement-chantier",
+    nom: "Montage Raccordement électrique de chantier",
+    difficulte: "Moyen",
+    description: "Alimenter un coffret de chantier équipé d'un différentiel 30mA et de prises étanches, depuis l'armoire provisoire.",
+    canvasW: 940, canvasH: 260,
+    successTarget: "coffret",
+    sectionOptions: [1.5, 2.5, 6],
+    sectionCorrect: 2.5,
+    components: [
+      { id: "disj", type: "disjoncteur", family: "source", label: "Disjoncteur armoire provisoire", x: 20, y: 20, w: 150, h: 54,
+        calibreOptions: [16, 20, 32], calibreCorrect: 20,
+        terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 170, y: 47 }] },
+      { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 150, h: 54,
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 137, network: true }, { id: "out", label: "N", x: 170, y: 137 }] },
+      { id: "bt", type: "bornier-terre", family: "source", label: "Bornier Terre", x: 20, y: 180, w: 150, h: 54,
+        terminals: [{ id: "in", label: "Réseau T", x: 20, y: 207, network: true }, { id: "out", label: "T", x: 170, y: 207 }] },
+      { id: "diff", type: "differentiel", family: "source", label: "Différentiel chantier 30mA", x: 330, y: 60, w: 150, h: 100,
+        info: "Sur un chantier, chaque coffret de distribution doit être protégé par un dispositif différentiel haute sensibilité 30 mA, en raison des conditions d'utilisation sévères (humidité, câbles traînés au sol, matériel portatif).",
+        terminals: [{ id: "in_ph", label: "Ph entrée", x: 330, y: 90 }, { id: "in_n", label: "N entrée", x: 330, y: 130 }, { id: "out_ph", label: "Ph sortie", x: 480, y: 90 }, { id: "out_n", label: "N sortie", x: 480, y: 130 }] },
+      { id: "coffret", type: "coffret-chantier", family: "receiver", label: "Coffret de chantier (prises étanches)", x: 650, y: 20, w: 160, h: 140,
+        info: "Le coffret de chantier regroupe des prises de courant étanches (IP44 minimum), résistantes aux chocs, alimentées via des câbles souples de type H07RN-F adaptés aux conditions extérieures et à la manutention.",
+        terminals: [{ id: "ph", label: "Ph", x: 650, y: 50 }, { id: "n", label: "N", x: 650, y: 90 }, { id: "terre", label: "T", x: 650, y: 130 }] }
+    ],
+    connections: [
+      { from: "disj.out", to: "diff.in_ph", role: "phase" },
+      { from: "bn.out", to: "diff.in_n", role: "neutre" },
+      { from: "diff.out_ph", to: "coffret.ph", role: "phase" },
+      { from: "diff.out_n", to: "coffret.n", role: "neutre" },
+      { from: "bt.out", to: "coffret.terre", role: "terre" }
     ]
   }
 ];

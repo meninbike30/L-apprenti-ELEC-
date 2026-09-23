@@ -3,7 +3,7 @@
 // Numéro de version affiché en haut de l'appli : à incrémenter à chaque
 // mise à jour poussée sur GitHub, pour que les utilisateurs puissent
 // vérifier facilement s'ils ont bien la dernière version.
-const APP_VERSION = "2.9";
+const APP_VERSION = "2.11";
 const versionBadge = document.getElementById("app-version");
 if (versionBadge) versionBadge.textContent = "v" + APP_VERSION;
 
@@ -289,6 +289,28 @@ const COURS_ATELIER_LINKS = {
   "Le volet roulant": "volet-roulant",
   "Le chauffage": "chauffage-fil-pilote",
   "La VMC": "vmc",
+  "L'alarme intrusion": "alarme-intrusion",
+  "Les contrôles d'accès": "controle-acces",
+  "Le portail battant": "portail-battant",
+  "Le portail coulissant": "portail-coulissant",
+  "Les portes de garage": "porte-garage",
+  "La domotique": "domotique",
+  "Le tableau de communication": "tableau-communication",
+  "Câblâge RJ 45": "cablage-rj45",
+  "La Gestion de l'énergie": "gestion-energie",
+  "L'IRVE": "irve",
+  "Le Photovoltaïque": "photovoltaique",
+  "TGBT": "tgbt",
+  "L'armoire de distribution": "tgbt",
+  "Le Fusible": "fusible",
+  "Le Parafoudre": "parafoudre",
+  "Prise de terre": "prise-terre",
+  "Montage Double Allumage": "double-allumage",
+  "Association des récepteurs": "association-recepteurs",
+  "Montage Bobines (MN et MX)": "bobines-mn-mx",
+  "Montage BAES": "baes",
+  "Montage OF - SD": "of-sd",
+  "Raccordement électrique de chantier": "raccordement-chantier",
 };
 
 let COURS_INDEX = [];

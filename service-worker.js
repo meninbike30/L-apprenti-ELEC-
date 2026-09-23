@@ -1,4 +1,4 @@
-const CACHE_NAME = "eeb-quiz-v2.7";
+const CACHE_NAME = "eeb-quiz-v2.11";
 const ASSETS = [
   "./",
   "./index.html",
