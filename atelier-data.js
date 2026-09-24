@@ -1164,29 +1164,34 @@ const ATELIER_EXERCISES = [
     id: "bobines-mn-mx",
     nom: "Montage Bobines de déclenchement (MN et MX)",
     difficulte: "Difficile",
-    description: "Câbler le circuit de commande d'un bloc déclencheur MX, actionné par un coup de poing d'arrêt d'urgence.",
-    canvasW: 900, canvasH: 260,
+    description: "Câbler les deux circuits de déclenchement d'un disjoncteur principal : la bobine MX (à émission, actionnée par un coup de poing d'arrêt d'urgence) et la bobine MN (à manque de tension, alimentée en permanence).",
+    canvasW: 900, canvasH: 320,
     successTarget: "bobineMX",
     sectionOptions: [1.5, 2.5],
     sectionCorrect: 1.5,
     components: [
       { id: "disjAux", type: "disjoncteur", family: "source", label: "Disjoncteur circuit auxiliaire", x: 20, y: 20, w: 150, h: 54,
         calibreOptions: [2, 4, 10], calibreCorrect: 2,
-        info: "Le circuit de commande de la bobine MX est un circuit auxiliaire de faible puissance, protégé par un disjoncteur dédié de faible calibre.",
+        info: "Le circuit de commande des bobines MX et MN est un circuit auxiliaire de faible puissance, protégé par un disjoncteur dédié de faible calibre.",
         terminals: [{ id: "in", label: "Réseau", x: 20, y: 47, network: true }, { id: "out", label: "Sortie", x: 170, y: 47 }] },
       { id: "bn", type: "bornier", family: "source", label: "Bornier Neutre", x: 20, y: 110, w: 150, h: 54,
-        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 137, network: true }, { id: "out", label: "N", x: 170, y: 137 }] },
-      { id: "bouton", type: "bouton-poussoir", family: "switch", label: "Coup de poing arrêt d'urgence", x: 330, y: 20, w: 150, h: 54,
+        terminals: [{ id: "in", label: "Réseau N", x: 20, y: 137, network: true }, { id: "out1", label: "N1", x: 170, y: 128 }, { id: "out2", label: "N2", x: 170, y: 142 }] },
+      { id: "bouton", type: "bouton-poussoir", family: "switch", label: "Coup de poing arrêt d'urgence", x: 340, y: 20, w: 150, h: 54,
         info: "Le coup de poing d'arrêt d'urgence, en appui, applique la tension à la bobine MX pour provoquer l'ouverture immédiate du disjoncteur principal.",
-        terminals: [{ id: "in", label: "E", x: 330, y: 47 }, { id: "out", label: "S", x: 480, y: 47 }] },
-      { id: "bobineMX", type: "bobine", family: "relay", label: "Bobine MX (déclencheur à émission)", x: 630, y: 20, w: 160, h: 100,
+        terminals: [{ id: "in", label: "E", x: 340, y: 47 }, { id: "out", label: "S", x: 490, y: 47 }] },
+      { id: "bobineMX", type: "bobine", family: "relay", label: "Bobine MX (déclencheur à émission)", x: 640, y: 20, w: 170, h: 100,
         info: "La bobine MX (déclencheur à émission de courant) est intégrée au disjoncteur principal : dès qu'elle est mise sous tension (par exemple via un coup de poing d'arrêt d'urgence), elle provoque immédiatement l'ouverture du disjoncteur. À l'inverse, une bobine MN (déclencheur à manque de tension) déclenche lorsque sa tension d'alimentation DISPARAÎT — elle est utilisée pour les arrêts de sécurité en cas de coupure secteur.",
-        terminals: [{ id: "l", label: "L", x: 630, y: 50 }, { id: "n", label: "N", x: 630, y: 90 }] }
+        terminals: [{ id: "l", label: "L", x: 640, y: 50 }, { id: "n", label: "N", x: 640, y: 90 }] },
+      { id: "bobineMN", type: "bobine", family: "relay", label: "Bobine MN (déclencheur à manque de tension)", x: 340, y: 180, w: 170, h: 100,
+        info: "La bobine MN (déclencheur à manque de tension) doit rester alimentée en permanence pendant le fonctionnement normal de l'installation : elle est câblée directement sur le circuit auxiliaire (pas de bouton poussoir). Si l'alimentation de cette bobine disparaît (coupure secteur, arrêt d'urgence à câblage en boucle, etc.), elle déclenche aussitôt l'ouverture du disjoncteur principal — c'est un fonctionnement à sécurité positive.",
+        terminals: [{ id: "l", label: "L", x: 340, y: 210 }, { id: "n", label: "N", x: 340, y: 250 }] }
     ],
     connections: [
       { from: "disjAux.out", to: "bouton.in", role: "phase" },
       { from: "bouton.out", to: "bobineMX.l", role: "commande" },
-      { from: "bn.out", to: "bobineMX.n", role: "neutre" }
+      { from: "bn.out1", to: "bobineMX.n", role: "neutre" },
+      { from: "disjAux.out", to: "bobineMN.l", role: "phase" },
+      { from: "bn.out2", to: "bobineMN.n", role: "neutre" }
     ]
   },
   {

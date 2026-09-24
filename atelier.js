@@ -43,10 +43,50 @@ function strokeForRole(roleKey, patternId) {
   return WIRE_ROLES[roleKey].color;
 }
 
-// ---------- Tracé des câbles à angle droit ----------
-function elbowPath(x1, y1, x2, y2) {
+// ---------- Tracé des câbles à angle droit (évite les composants au passage) ----------
+// Plutôt que de couper systématiquement au milieu géométrique (ce qui traverse souvent
+// un composant ou un bornier posé entre le départ et l'arrivée), on cherche un "couloir"
+// vertical libre entre les composants dont l'emprise croise le trajet du fil, et on y
+// place le coude du fil, en restant le plus proche possible du milieu.
+function elbowPath(x1, y1, x2, y2, components) {
   if (Math.abs(y1 - y2) < 0.5) return `M ${x1} ${y1} L ${x2} ${y2}`;
-  const midX = (x1 + x2) / 2;
+  const comps = components || (typeof currentExo !== "undefined" && currentExo ? currentExo.components : null) || [];
+  const desiredX = (x1 + x2) / 2;
+  const yLo = Math.min(y1, y2), yHi = Math.max(y1, y2);
+  const margin = 8;
+
+  const containsPoint = (c, x, y) =>
+    x >= c.x - 0.5 && x <= c.x + c.w + 0.5 && y >= c.y - 0.5 && y <= c.y + c.h + 0.5;
+
+  // Composants "à risque" : leur emprise verticale croise le trajet du fil, en excluant
+  // les composants de départ/arrivée eux-mêmes (sinon le fil ne pourrait jamais sortir).
+  const merged = comps
+    .filter(c => !containsPoint(c, x1, y1) && !containsPoint(c, x2, y2))
+    .filter(c => c.y - margin < yHi && c.y + c.h + margin > yLo)
+    .map(c => [c.x - margin, c.x + c.w + margin])
+    .sort((a, b) => a[0] - b[0])
+    .reduce((acc, [a, b]) => {
+      const last = acc[acc.length - 1];
+      if (last && a <= last[1]) last[1] = Math.max(last[1], b);
+      else acc.push([a, b]);
+      return acc;
+    }, []);
+
+  // Couloirs libres entre ces composants (et de part et d'autre).
+  const lanes = [];
+  let cursor = -Infinity;
+  merged.forEach(([a, b]) => { lanes.push([cursor, a]); cursor = b; });
+  lanes.push([cursor, Infinity]);
+
+  const lo = Math.min(x1, x2), hi = Math.max(x1, x2);
+  let midX = desiredX, bestScore = Infinity;
+  lanes.forEach(([a, b]) => {
+    const clamped = Math.max(a, Math.min(b, desiredX));
+    const inRange = clamped >= lo - 40 && clamped <= hi + 40;
+    const score = Math.abs(clamped - desiredX) + (inRange ? 0 : 1000);
+    if (score < bestScore) { bestScore = score; midX = clamped; }
+  });
+
   return `M ${x1} ${y1} H ${midX} V ${y2} H ${x2}`;
 }
 
@@ -1116,7 +1156,7 @@ function buildExoSchema(exo) {
     const p1 = findTerm(exo, c1, t1);
     const p2 = findTerm(exo, c2, t2);
     const line = document.createElementNS(SVG_NS, "path");
-    line.setAttribute("d", elbowPath(p1.x, p1.y, p2.x, p2.y));
+    line.setAttribute("d", elbowPath(p1.x, p1.y, p2.x, p2.y, exo.components));
     line.setAttribute("fill", "none");
     line.setAttribute("stroke", strokeForRole(c.role, patternId));
     line.setAttribute("stroke-width", "5");
