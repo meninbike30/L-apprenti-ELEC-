@@ -895,39 +895,127 @@ function showHint(msg) {
 }
 
 // ---------- Vérification du montage ----------
-function normalizeKey(comp1, term1, comp2, term2) {
-  return [comp1 + "." + term1, comp2 + "." + term2].sort().join("|");
+// La vérification se fait par équivalence électrique (groupes de bornes reliées
+// entre elles) et non par correspondance exacte fil à fil : deux bornes qui
+// doivent être au même potentiel (ex. tous les points "neutre" d'un montage)
+// peuvent être reliées directement, en chaîne, ou dans un ordre différent de
+// celui du schéma de référence, du moment que le résultat électrique est le
+// même et que la couleur de fil (rôle) est correcte.
+function makeUnionFind() {
+  const parent = {};
+  function find(x) {
+    if (!(x in parent)) parent[x] = x;
+    if (parent[x] !== x) parent[x] = find(parent[x]);
+    return parent[x];
+  }
+  function union(a, b) {
+    const ra = find(a), rb = find(b);
+    if (ra !== rb) parent[ra] = rb;
+  }
+  return { parent, find, union };
+}
+function termKey(comp, term) {
+  return comp + "." + term;
+}
+function labelOfKey(key) {
+  const [comp, term] = key.split(".");
+  return labelOf({ comp, term });
 }
 
 function checkCircuit() {
   const issues = [];
-  const expectedMap = new Map();
+
+  // 1) Regrouper les connexions attendues par rôle : chaque composante connexe
+  //    d'un même rôle forme un "réseau" électrique que l'utilisateur doit
+  //    reconstituer (peu importe le chemin exact emprunté).
+  const roleUF = {};
   currentExo.connections.forEach(c => {
-    const [c1, t1] = c.from.split(".");
-    const [c2, t2] = c.to.split(".");
-    expectedMap.set(normalizeKey(c1, t1, c2, t2), c);
+    if (!roleUF[c.role]) roleUF[c.role] = makeUnionFind();
+    roleUF[c.role].find(c.from);
+    roleUF[c.role].find(c.to);
+    roleUF[c.role].union(c.from, c.to);
   });
 
-  const matched = new Set();
+  // 1bis) Les bornes d'un bornier de distribution (type "bornier"/"bornier-terre",
+  //    ex. Bornier Neutre N1/N2) sont physiquement pontées en interne : ce sont
+  //    électriquement le même point, quelle que soit la sortie utilisée.
+  const terminalRoleEarly = {};
+  Object.keys(roleUF).forEach(role => {
+    Object.keys(roleUF[role].parent).forEach(key => { terminalRoleEarly[key] = role; });
+  });
+  currentExo.components.forEach(comp => {
+    if (comp.type !== "bornier" && comp.type !== "bornier-terre") return;
+    const outKeys = comp.terminals.filter(t => !t.network).map(t => termKey(comp.id, t.id));
+    const byRole = {};
+    outKeys.forEach(key => {
+      const role = terminalRoleEarly[key];
+      if (!role) return;
+      (byRole[role] = byRole[role] || []).push(key);
+    });
+    Object.keys(byRole).forEach(role => {
+      const keys = byRole[role];
+      for (let i = 1; i < keys.length; i++) roleUF[role].union(keys[0], keys[i]);
+    });
+  });
+
+  // 2) Pour chaque borne attendue, retrouver son rôle et l'identifiant de son réseau.
+  const terminalRole = {}; // key -> role
+  Object.keys(roleUF).forEach(role => {
+    Object.keys(roleUF[role].parent).forEach(key => { terminalRole[key] = role; });
+  });
+  function netIdOf(key) {
+    const role = terminalRole[key];
+    if (!role) return null;
+    return role + "::" + roleUF[role].find(key);
+  }
+
+  // 3) Rejouer les fils posés par l'utilisateur pour reconstituer ses propres réseaux.
+  const userUF = makeUnionFind();
   userConnections.forEach(conn => {
-    const key = normalizeKey(conn.from.comp, conn.from.term, conn.to.comp, conn.to.term);
-    if (expectedMap.has(key)) {
-      matched.add(key);
-      const expected = expectedMap.get(key);
-      if (expected.role !== conn.role) {
-        issues.push(`Mauvaise couleur de fil entre ${labelOf(conn.from)} et ${labelOf(conn.to)} : attendu "${WIRE_ROLES[expected.role].label}", posé "${WIRE_ROLES[conn.role].label}".`);
+    const k1 = termKey(conn.from.comp, conn.from.term);
+    const k2 = termKey(conn.to.comp, conn.to.term);
+    userUF.find(k1);
+    userUF.find(k2);
+    const net1 = netIdOf(k1);
+    const net2 = netIdOf(k2);
+
+    if (net1 && net2 && net1 === net2) {
+      // Les deux bornes doivent bien être reliées ensemble : on valide la couleur.
+      const expectedRole = terminalRole[k1];
+      if (conn.role !== expectedRole) {
+        issues.push(`Mauvaise couleur de fil entre ${labelOfKey(k1)} et ${labelOfKey(k2)} : attendu "${WIRE_ROLES[expectedRole].label}", posé "${WIRE_ROLES[conn.role].label}".`);
       }
+      userUF.union(k1, k2);
+    } else if (net1 && net2 && net1 !== net2) {
+      issues.push(`Connexion incorrecte entre ${labelOfKey(k1)} et ${labelOfKey(k2)} : ces deux points ne doivent pas être reliés ensemble.`);
     } else {
-      issues.push(`Connexion incorrecte ou en trop entre ${labelOf(conn.from)} et ${labelOf(conn.to)}.`);
+      issues.push(`Connexion incorrecte ou en trop entre ${labelOfKey(k1)} et ${labelOfKey(k2)}.`);
     }
   });
 
-  expectedMap.forEach((c, key) => {
-    if (!matched.has(key)) {
-      const [c1, t1] = c.from.split(".");
-      const [c2, t2] = c.to.split(".");
-      issues.push(`Connexion manquante entre ${labelOf({ comp: c1, term: t1 })} et ${labelOf({ comp: c2, term: t2 })} (fil ${WIRE_ROLES[c.role].label}).`);
-    }
+  // 4) Vérifier que chaque réseau attendu est bien entièrement reconstitué côté utilisateur,
+  //    quel que soit le chemin emprunté pour y arriver.
+  Object.keys(roleUF).forEach(role => {
+    const uf = roleUF[role];
+    const members = {}; // root -> [keys]
+    Object.keys(uf.parent).forEach(key => {
+      const root = uf.find(key);
+      (members[root] = members[root] || []).push(key);
+    });
+    Object.values(members).forEach(group => {
+      if (group.length < 2) return;
+      const subGroups = {}; // userUF root -> [keys]
+      group.forEach(key => {
+        const root = userUF.find(key);
+        (subGroups[root] = subGroups[root] || []).push(key);
+      });
+      const parts = Object.values(subGroups);
+      if (parts.length > 1) {
+        for (let i = 1; i < parts.length; i++) {
+          issues.push(`Connexion manquante entre ${labelOfKey(parts[0][0])} et ${labelOfKey(parts[i][0])} (fil ${WIRE_ROLES[role].label}).`);
+        }
+      }
+    });
   });
 
   currentExo.components.forEach(comp => {
