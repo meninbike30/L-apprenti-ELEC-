@@ -949,55 +949,59 @@ function checkCircuit() {
 
   // 1bis) Les bornes d'un bornier de distribution (type "bornier"/"bornier-terre",
   //    ex. Bornier Neutre N1/N2) sont physiquement pontées en interne : ce sont
-  //    électriquement le même point, quelle que soit la sortie utilisée.
-  const terminalRoleEarly = {};
-  Object.keys(roleUF).forEach(role => {
-    Object.keys(roleUF[role].parent).forEach(key => { terminalRoleEarly[key] = role; });
-  });
+  //    électriquement le même point, quelle que soit la sortie utilisée. On les
+  //    fusionne, rôle par rôle (une borne peut ne compter que pour certains rôles).
   currentExo.components.forEach(comp => {
     if (comp.type !== "bornier" && comp.type !== "bornier-terre") return;
     const outKeys = comp.terminals.filter(t => !t.network).map(t => termKey(comp.id, t.id));
-    const byRole = {};
-    outKeys.forEach(key => {
-      const role = terminalRoleEarly[key];
-      if (!role) return;
-      (byRole[role] = byRole[role] || []).push(key);
-    });
-    Object.keys(byRole).forEach(role => {
-      const keys = byRole[role];
-      for (let i = 1; i < keys.length; i++) roleUF[role].union(keys[0], keys[i]);
+    Object.keys(roleUF).forEach(role => {
+      const uf = roleUF[role];
+      const present = outKeys.filter(k => k in uf.parent);
+      for (let i = 1; i < present.length; i++) uf.union(present[0], present[i]);
     });
   });
 
-  // 2) Pour chaque borne attendue, retrouver son rôle et l'identifiant de son réseau.
-  const terminalRole = {}; // key -> role
-  Object.keys(roleUF).forEach(role => {
-    Object.keys(roleUF[role].parent).forEach(key => { terminalRole[key] = role; });
-  });
-  function netIdOf(key) {
-    const role = terminalRole[key];
-    if (!role) return null;
-    return role + "::" + roleUF[role].find(key);
+  // 2) Une même borne peut légitimement appartenir à plusieurs rôles différents
+  //    (ex. la sortie d'un disjoncteur alimente à la fois le circuit "phase" et le
+  //    circuit "commande" des boutons poussoirs) : on ne peut donc pas lui assigner
+  //    un rôle unique. À la place, pour chaque fil posé, on vérifie sa validité dans
+  //    le référentiel du rôle que l'utilisateur a lui-même choisi pour ce fil.
+  function isKnownTerminal(key) {
+    return Object.keys(roleUF).some(role => key in roleUF[role].parent);
   }
 
   // 3) Rejouer les fils posés par l'utilisateur pour reconstituer ses propres réseaux.
   const userUF = makeUnionFind();
+  // Même pontage interne des borniers de distribution que dans le référentiel (1bis) :
+  // c'est un fait physique du composant, pas un fil que l'apprenant doit poser lui-même.
+  currentExo.components.forEach(comp => {
+    if (comp.type !== "bornier" && comp.type !== "bornier-terre") return;
+    const outKeys = comp.terminals.filter(t => !t.network).map(t => termKey(comp.id, t.id));
+    for (let i = 1; i < outKeys.length; i++) userUF.union(outKeys[0], outKeys[i]);
+  });
   userConnections.forEach(conn => {
     const k1 = termKey(conn.from.comp, conn.from.term);
     const k2 = termKey(conn.to.comp, conn.to.term);
     userUF.find(k1);
     userUF.find(k2);
-    const net1 = netIdOf(k1);
-    const net2 = netIdOf(k2);
 
-    if (net1 && net2 && net1 === net2) {
-      // Les deux bornes doivent bien être reliées ensemble : on valide la couleur.
-      const expectedRole = terminalRole[k1];
-      if (conn.role !== expectedRole) {
-        issues.push(`Mauvaise couleur de fil entre ${labelOfKey(k1)} et ${labelOfKey(k2)} : attendu "${WIRE_ROLES[expectedRole].label}", posé "${WIRE_ROLES[conn.role].label}".`);
-      }
+    const chosenUF = roleUF[conn.role];
+    if (chosenUF && (k1 in chosenUF.parent) && (k2 in chosenUF.parent) && chosenUF.find(k1) === chosenUF.find(k2)) {
+      // Les deux bornes doivent bien être reliées ensemble, avec la bonne couleur.
       userUF.union(k1, k2);
-    } else if (net1 && net2 && net1 !== net2) {
+      return;
+    }
+
+    // Existe-t-il un rôle sous lequel ces deux bornes forment bien un même réseau ?
+    const matchRole = Object.keys(roleUF).find(role => {
+      const uf = roleUF[role];
+      return (k1 in uf.parent) && (k2 in uf.parent) && uf.find(k1) === uf.find(k2);
+    });
+
+    if (matchRole) {
+      issues.push(`Mauvaise couleur de fil entre ${labelOfKey(k1)} et ${labelOfKey(k2)} : attendu "${WIRE_ROLES[matchRole].label}", posé "${WIRE_ROLES[conn.role].label}".`);
+      userUF.union(k1, k2);
+    } else if (isKnownTerminal(k1) && isKnownTerminal(k2)) {
       issues.push(`Connexion incorrecte entre ${labelOfKey(k1)} et ${labelOfKey(k2)} : ces deux points ne doivent pas être reliés ensemble.`);
     } else {
       issues.push(`Connexion incorrecte ou en trop entre ${labelOfKey(k1)} et ${labelOfKey(k2)}.`);
