@@ -845,6 +845,17 @@ function onWireEnd(evt) {
   dragState.tempLine.remove();
 
   if (best && !(best.comp === dragState.fromComp && best.term === dragState.fromTerm)) {
+    // Si un fil existe déjà entre ces deux mêmes bornes (dans un sens ou dans l'autre),
+    // on le remplace au lieu d'en empiler un second par-dessus (ex. mauvaise couleur
+    // posée par erreur : pas besoin de tout recommencer, il suffit de retirer le fil).
+    for (let i = userConnections.length - 1; i >= 0; i--) {
+      const c = userConnections[i];
+      const sameDirect = c.from.comp === dragState.fromComp && c.from.term === dragState.fromTerm &&
+                          c.to.comp === best.comp && c.to.term === best.term;
+      const sameReverse = c.from.comp === best.comp && c.from.term === best.term &&
+                           c.to.comp === dragState.fromComp && c.to.term === dragState.fromTerm;
+      if (sameDirect || sameReverse) userConnections.splice(i, 1);
+    }
     userConnections.push({
       from: { comp: dragState.fromComp, term: dragState.fromTerm },
       to: { comp: best.comp, term: best.term },
@@ -1174,6 +1185,14 @@ document.getElementById("btn-quit-atelier").addEventListener("click", () => {
   showView("atelierList");
 });
 document.getElementById("btn-check-circuit").addEventListener("click", checkCircuit);
+document.getElementById("btn-undo-wire").addEventListener("click", () => {
+  if (userConnections.length === 0) return;
+  userConnections.pop();
+  redrawWires();
+  document.getElementById("atelier-result").classList.add("hidden");
+  const target = document.querySelector(`.comp-box[data-comp="${currentExo.successTarget}"]`);
+  if (target) target.classList.remove("success-glow");
+});
 document.getElementById("btn-reset-circuit").addEventListener("click", () => {
   userConnections = [];
   redrawWires();
